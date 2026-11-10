@@ -1,32 +1,35 @@
 name: build
 
-on: [push, workflow_dispatch]
+on:
+  push:
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-java@v4
+      - name: Set up Java
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 21
-
-      - uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: 9.2.0
+          java-version: '25'
 
       - name: Unzip project
-        run: unzip -q belis-skylyrics-main.zip -d project
+        run: unzip -q belis-skylyrics-1.21.11-source.zip -d project
 
-      - name: Build
-        working-directory: project/modulesmod
-        run: gradle build -x test
+      - name: Make Gradle wrapper executable
+        run: chmod +x ./gradlew
+        working-directory: project
 
-      - uses: actions/upload-artifact@v4
+      - name: Build Minecraft 1.21.11 mod
+        run: ./gradlew build --no-daemon -x test
+        working-directory: project
+
+      - name: Upload mod jar
+        uses: actions/upload-artifact@v4
         with:
-          name: modulesmod-jar
-          path: project/modulesmod/build/libs/*.jar
+          name: belis-skylyrics-1.21.11
+          path: project/build/libs/*.jar
           if-no-files-found: error

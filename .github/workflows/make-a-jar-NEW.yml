@@ -17,7 +17,7 @@ jobs:
           java-version: '25'
 
       - name: Unzip project
-        run: unzip -q belis-skylyrics-1.21.11-source.zip -d project
+        run: unzip -q belis-skylyrics-source.zip -d project
 
       - name: Make Gradle wrapper executable
         run: chmod +x ./gradlew

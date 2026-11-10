@@ -19,7 +19,7 @@ jobs:
           gradle-version: 9.2.0
 
       - name: Unzip project
-        run: unzip -q modulesmod.zip -d project
+        run: unzip -q belis-skylyrics-main.zip -d project
 
       - name: Build
         working-directory: project/modulesmod

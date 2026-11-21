@@ -1,19 +1,15 @@
-name: Migrate to 26.2 (run once)
+name: Port to 26.2 (run once)
 on: workflow_dispatch
 
 permissions:
   contents: write
 
 jobs:
-  migrate:
+  port:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Find the project folder
-        run: |
-          S=$(find . -name settings.gradle -not -path './.git/*' | head -1)
-          test -n "$S"
-          echo "PROJ=$(dirname "$S")" >> "$GITHUB_ENV"
+
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -21,11 +17,18 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: 9.2.0
+
+      - name: Unzip the project
+        run: |
+          test -f modulesmod-26.2.zip
+          unzip -o modulesmod-26.2.zip -x ".github/*"
+          rm modulesmod-26.2.zip
+          test -f settings.gradle
+
       - name: Rename Yarn -> Mojang names
-        working-directory: ${{ env.PROJ }}
         run: gradle migrateMappings --mappings "net.minecraft:mappings:1.21.11"
-      - name: Swap in the migrated sources and the 26.2 build files
-        working-directory: ${{ env.PROJ }}
+
+      - name: Swap in migrated sources and 26.2 build files
         run: |
           test -d remappedSrc
           P=$(find remappedSrc -maxdepth 4 -type d -name com | head -1)
@@ -39,11 +42,26 @@ jobs:
           cp port-26.2/modulesmod.mixins.json src/main/resources/modulesmod.mixins.json
           cp port-26.2/modulesmod.optional.mixins.json src/main/resources/modulesmod.optional.mixins.json
           rm -rf remappedSrc port-26.2
+
       - name: Commit
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@users.noreply.github.com"
-          rm -f .github/workflows/migrate-to-26.2.yml
           git add -A
           git commit -m "Port to Minecraft 26.2 (Mojang names, new build files)"
           git push
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: 9.5.1
+      - name: Build
+        run: gradle build
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: modulesmod-jar
+          path: build/libs/modulesmod-*.jar

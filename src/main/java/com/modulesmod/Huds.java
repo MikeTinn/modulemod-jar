@@ -125,7 +125,7 @@ public final class Huds {
 			String text = text(mc, preview);
 			int w = mc.font.width(text) + 8;
 			if (bg.bool) ctx.fill(0, 0, w, 15, HudUtil.alpha(bgOpacity.num) << 24);
-			ctx.drawString(mc.font, text, 4, 3, 0xFF000000 | color(mc, preview), shadow.bool);
+			ctx.text(mc.font, text, 4, 3, 0xFF000000 | color(mc, preview), shadow.bool);
 		}
 	}
 
@@ -270,8 +270,8 @@ public final class Huds {
 				ctx.fill(x + 17, y, x + 18, y + 18, outline);
 			}
 			if (stack.isEmpty()) return;
-			ctx.renderItem(stack, x + 1, y + 1);
-			if (counts) ctx.renderItemDecorations(tr, stack, x + 1, y + 1);
+			ctx.item(stack, x + 1, y + 1);
+			if (counts) ctx.itemDecorations(tr, stack, x + 1, y + 1);
 		}
 	}
 
@@ -378,7 +378,7 @@ public final class Huds {
 			ctx.pose().pushMatrix();
 			ctx.pose().translate((w - tw * f) / 2f, y);
 			ctx.pose().scale(f, f);
-			ctx.drawString(tr, text, 0, 0, argb(alpha, rgb), shadow);
+			ctx.text(tr, text, 0, 0, argb(alpha, rgb), shadow);
 			ctx.pose().popMatrix();
 		}
 
@@ -395,11 +395,11 @@ public final class Huds {
 			ctx.pose().pushMatrix();
 			ctx.pose().translate((w - fullW * f) / 2f, y);
 			ctx.pose().scale(f, f);
-			if (!sung.isEmpty()) ctx.drawString(tr, sung, 0, 0, argb(alpha, rgb), shadow);
+			if (!sung.isEmpty()) ctx.text(tr, sung, 0, 0, argb(alpha, rgb), shadow);
 			if (!part.isEmpty()) {
-				ctx.drawString(tr, part, sungW, 0, argb(alpha * (0.5f + 0.5f * line.partialFrac()), rgb), shadow);
+				ctx.text(tr, part, sungW, 0, argb(alpha * (0.5f + 0.5f * line.partialFrac()), rgb), shadow);
 			}
-			if (!rest.isEmpty()) ctx.drawString(tr, rest, sungW + partW, 0, argb(alpha * 0.5f, rgb), shadow);
+			if (!rest.isEmpty()) ctx.text(tr, rest, sungW + partW, 0, argb(alpha * 0.5f, rgb), shadow);
 			ctx.pose().popMatrix();
 		}
 	}

@@ -96,7 +96,7 @@ public class ChatSearchScreen extends Screen {
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor ctx, int mouseX, int mouseY, float delta) {
 		super.extractRenderState(ctx, mouseX, mouseY, delta);
-		ctx.drawString(font, "Chat Search", (width - font.width("Chat Search")) / 2, 4, 0xFFFFFFFF);
+		ctx.text(font, "Chat Search", (width - font.width("Chat Search")) / 2, 4, 0xFFFFFFFF);
 
 		updateScrollBounds();
 		int left = (width - contentW()) / 2 + 5;
@@ -104,16 +104,16 @@ public class ChatSearchScreen extends Screen {
 
 		if (lines.isEmpty()) {
 			String msg = ChatState.LOG.isEmpty() ? "No messages logged yet" : "No messages found";
-			ctx.drawString(font, msg, (width - font.width(msg)) / 2, TOP + 20, 0xFFAAAAAA);
+			ctx.text(font, msg, (width - font.width(msg)) / 2, TOP + 20, 0xFFAAAAAA);
 		}
 
 		for (int i = 0; i < lines.size(); i++) {
 			int y = TOP + i * LINE_H - scroll;
 			if (y < TOP || y + 9 > bottom) continue;
-			ctx.drawString(font, lines.get(i), left, y, 0xFFFFFFFF, true);
+			ctx.text(font, lines.get(i), left, y, 0xFFFFFFFF, true);
 		}
 
 		String count = results + (results >= MAX_RESULTS ? "+" : "") + " result" + (results == 1 ? "" : "s");
-		ctx.drawString(font, count, (width - contentW()) / 2, bottom + 2, 0xFF888888);
+		ctx.text(font, count, (width - contentW()) / 2, bottom + 2, 0xFF888888);
 	}
 }

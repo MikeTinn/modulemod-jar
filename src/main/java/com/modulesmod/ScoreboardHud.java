@@ -155,16 +155,16 @@ public final class ScoreboardHud {
 
 		if (!hideTitle) {
 			int tx = left + 2 + (maxW - tr.width(title)) / 2;
-			ctx.drawString(tr, title, tx, rowsTop - 9, textColor, shadow);
+			ctx.text(tr, title, tx, rowsTop - 9, textColor, shadow);
 		}
 
 		for (int i = 0; i < lines.size(); i++) {
 			Line l = lines.get(i);
 			int y = rowsTop + i * lineH;
-			ctx.drawString(tr, l.name(), left + 2, y, textColor, shadow);
+			ctx.text(tr, l.name(), left + 2, y, textColor, shadow);
 			int sw = tr.width(l.score());
 			if (sw > 0) {
-				ctx.drawString(tr, l.score(), right - 2 - sw, y, textColor, shadow);
+				ctx.text(tr, l.score(), right - 2 - sw, y, textColor, shadow);
 			}
 		}
 

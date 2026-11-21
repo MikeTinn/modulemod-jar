@@ -153,18 +153,18 @@ public final class ArmorHud {
 		if (vertical) {
 			// colour accent on the left edge
 			ctx.fill(p.x(), p.y(), p.x() + 2, p.y() + p.h(), c.color());
-			ctx.renderItem(c.stack(), p.x() + 3, p.y() + 3);
+			ctx.item(c.stack(), p.x() + 3, p.y() + 3);
 			if (!c.text().isEmpty()) {
-				ctx.drawString(tr, c.text(), p.x() + 3 + 16 + 4, p.y() + 7, c.color(), shadow);
+				ctx.text(tr, c.text(), p.x() + 3 + 16 + 4, p.y() + 7, c.color(), shadow);
 			}
 			if (showBar && c.damageable()) {
 				drawBar(ctx, p.x() + 3, p.y() + 20, p.w() - 6, c);
 			}
 		} else {
-			ctx.renderItem(c.stack(), p.x() + (p.w() - 16) / 2, p.y() + 3);
+			ctx.item(c.stack(), p.x() + (p.w() - 16) / 2, p.y() + 3);
 			int y = p.y() + 22;
 			if (!c.text().isEmpty()) {
-				ctx.drawString(tr, c.text(), p.x() + (p.w() - tr.width(c.text())) / 2, y, c.color(), shadow);
+				ctx.text(tr, c.text(), p.x() + (p.w() - tr.width(c.text())) / 2, y, c.color(), shadow);
 			}
 			if (showBar && c.damageable()) {
 				int barY = p.y() + p.h() - 5;
@@ -175,17 +175,17 @@ public final class ArmorHud {
 
 	private static void drawVanilla(GuiGraphicsExtractor ctx, Font tr, Cell c, Place p, boolean vertical, boolean shadow) {
 		if (vertical) {
-			ctx.renderItem(c.stack(), p.x(), p.y());
-			ctx.renderItemDecorations(tr, c.stack(), p.x(), p.y()); // vanilla durability bar
+			ctx.item(c.stack(), p.x(), p.y());
+			ctx.itemDecorations(tr, c.stack(), p.x(), p.y()); // vanilla durability bar
 			if (!c.text().isEmpty()) {
-				ctx.drawString(tr, c.text(), p.x() + 16 + 4, p.y() + 4, c.color(), shadow);
+				ctx.text(tr, c.text(), p.x() + 16 + 4, p.y() + 4, c.color(), shadow);
 			}
 		} else {
 			int ix = p.x() + (p.w() - 16) / 2;
-			ctx.renderItem(c.stack(), ix, p.y());
-			ctx.renderItemDecorations(tr, c.stack(), ix, p.y());
+			ctx.item(c.stack(), ix, p.y());
+			ctx.itemDecorations(tr, c.stack(), ix, p.y());
 			if (!c.text().isEmpty()) {
-				ctx.drawString(tr, c.text(), p.x() + (p.w() - tr.width(c.text())) / 2, p.y() + 18, c.color(), shadow);
+				ctx.text(tr, c.text(), p.x() + (p.w() - tr.width(c.text())) / 2, p.y() + 18, c.color(), shadow);
 			}
 		}
 	}

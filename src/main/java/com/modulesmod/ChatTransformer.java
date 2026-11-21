@@ -175,7 +175,7 @@ public final class ChatTransformer {
 
 	private static Component head(PlayerInfo sender) {
 		return MutableComponent.create(new ObjectContents(
-				new PlayerSprite(ResolvableProfile.createResolved(sender.getProfile()), Modules.CH_HEAD_HAT.bool)));
+				new PlayerSprite(ResolvableProfile.createResolved(sender.getProfile()), Modules.CH_HEAD_HAT.bool), java.util.Optional.empty()));
 	}
 
 	/**

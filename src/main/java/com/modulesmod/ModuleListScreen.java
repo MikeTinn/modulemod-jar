@@ -195,7 +195,7 @@ public class ModuleListScreen extends Screen {
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor ctx, int mouseX, int mouseY, float delta) {
 		super.extractRenderState(ctx, mouseX, mouseY, delta);
-		ctx.drawString(font, "Modules", (width - font.width("Modules")) / 2, 4, 0xFFFFFFFF);
+		ctx.text(font, "Modules", (width - font.width("Modules")) / 2, 4, 0xFFFFFFFF);
 
 		int bottom = bottom();
 		for (Row r : rows) {
@@ -204,7 +204,7 @@ public class ModuleListScreen extends Screen {
 
 		if (rows.isEmpty()) {
 			String msg = "No modules found";
-			ctx.drawString(font, msg, (width - font.width(msg)) / 2, 60, 0xFFAAAAAA);
+			ctx.text(font, msg, (width - font.width(msg)) / 2, 60, 0xFFAAAAAA);
 		}
 
 		if (maxScroll > 0) {
@@ -220,8 +220,8 @@ public class ModuleListScreen extends Screen {
 
 		ModuleIcons.draw(ctx, m.id, x + 4, y + 4, on);
 
-		ctx.drawString(font, m.name, x + 38, y + 7, on ? 0xFFFFFFFF : 0xFF888888);
+		ctx.text(font, m.name, x + 38, y + 7, on ? 0xFFFFFFFF : 0xFF888888);
 		String desc = font.plainSubstrByWidth(m.description, W - TOGGLE_W - 6 - 38 - 8);
-		ctx.drawString(font, desc, x + 38, y + 21, 0xFF8A8A8A);
+		ctx.text(font, desc, x + 38, y + 21, 0xFF8A8A8A);
 	}
 }

@@ -16,7 +16,7 @@ public final class CosmeticsFeature extends RenderLayer<AvatarRenderState, Playe
 	}
 
 	@Override
-	public void render(PoseStack matrices, SubmitNodeCollector queue, int light,
+	public void submit(PoseStack matrices, SubmitNodeCollector queue, int light,
 					   AvatarRenderState state, float headYaw, float headPitch) {
 		if (!Modules.COSMETICS.isEnabled()) return;
 		Minecraft mc = Minecraft.getInstance();

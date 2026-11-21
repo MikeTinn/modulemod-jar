@@ -46,9 +46,9 @@ public class HudEditorScreen extends Screen {
 		super.extractRenderState(ctx, mouseX, mouseY, delta);
 
 		String title = "Drag the HUDs where you want them";
-		ctx.drawString(font, title, (width - font.width(title)) / 2, 8, 0xFFFFFFFF);
+		ctx.text(font, title, (width - font.width(title)) / 2, 8, 0xFFFFFFFF);
 		String sub = "Dimmed ones are switched off";
-		ctx.drawString(font, sub, (width - font.width(sub)) / 2, 20, 0xFF888888);
+		ctx.text(font, sub, (width - font.width(sub)) / 2, 20, 0xFF888888);
 
 		Minecraft mc = Minecraft.getInstance();
 		for (Huds.Widget w : Huds.ALL) {
@@ -61,7 +61,7 @@ public class HudEditorScreen extends Screen {
 
 			if (!on) ctx.fill(b[0], b[1], b[0] + b[2], b[1] + b[3], 0x88000000);
 			int labelY = b[1] > 12 ? b[1] - 11 : b[1] + b[3] + 3;
-			ctx.drawString(font, w.name + (on ? "" : " (off)"), b[0], labelY, on ? 0xFFFFFFFF : 0xFF888888);
+			ctx.text(font, w.name + (on ? "" : " (off)"), b[0], labelY, on ? 0xFFFFFFFF : 0xFF888888);
 		}
 
 		// guide lines while dragging

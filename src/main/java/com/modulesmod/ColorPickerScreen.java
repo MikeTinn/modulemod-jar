@@ -199,9 +199,9 @@ public class ColorPickerScreen extends Screen {
 	public void extractRenderState(GuiGraphicsExtractor ctx, int mouseX, int mouseY, float delta) {
 		super.extractRenderState(ctx, mouseX, mouseY, delta);
 		String title = "Pick a color";
-		ctx.drawString(font, title, (width - font.width(title)) / 2, 8, 0xFFFFFFFF);
+		ctx.text(font, title, (width - font.width(title)) / 2, 8, 0xFFFFFFFF);
 		String name = setting.label;
-		ctx.drawString(font, name, (width - font.width(name)) / 2, 24, 0xFFAAAAAA);
+		ctx.text(font, name, (width - font.width(name)) / 2, 24, 0xFFAAAAAA);
 
 		// shade square: saturation to the right, brightness upwards
 		int n = SV / CELL;

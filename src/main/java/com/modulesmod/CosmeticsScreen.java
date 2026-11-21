@@ -101,7 +101,7 @@ public class CosmeticsScreen extends Screen {
 		} catch (Throwable t) {
 			status = "Folder: " + CustomImages.capesFolder();
 			Minecraft mc = Minecraft.getInstance();
-			if (mc.player != null) mc.gui.getChat().addMessage(Component.literal("[Cosmetics] put pictures in " + CustomImages.capesFolder()));
+			if (mc.player != null) mc.gui.hud.getChat().addMessage(Component.literal("[Cosmetics] put pictures in " + CustomImages.capesFolder()));
 		}
 	}
 
@@ -255,9 +255,9 @@ public class CosmeticsScreen extends Screen {
 		reload.visible = capes;
 
 		super.extractRenderState(ctx, mouseX, mouseY, delta);
-		ctx.drawString(font, "Cosmetics", (width - font.width("Cosmetics")) / 2, 8, 0xFFFFFFFF);
+		ctx.text(font, "Cosmetics", (width - font.width("Cosmetics")) / 2, 8, 0xFFFFFFFF);
 		String sub = "Only you can see these";
-		ctx.drawString(font, sub, (width - font.width(sub)) / 2, 20, 0xFF888888);
+		ctx.text(font, sub, (width - font.width(sub)) / 2, 20, 0xFF888888);
 
 		drawTabs(ctx, mouseX, mouseY);
 		drawLeftNotes(ctx);
@@ -274,7 +274,7 @@ public class CosmeticsScreen extends Screen {
 			boolean hover = inside(mouseX, mouseY, x, y, TAB_W, TAB_H);
 			ctx.fill(x, y, x + TAB_W, y + TAB_H, on ? 0xCC2A2A44 : (hover ? 0xAA1E1E2C : 0x99101018));
 			if (on) ctx.fill(x, y, x + 2, y + TAB_H, 0xFFFF7AA8);
-			ctx.drawString(font, tabs[i].label, x + 8, y + 6, on ? 0xFFFFFFFF : 0xFFAAAAAA);
+			ctx.text(font, tabs[i].label, x + 8, y + 6, on ? 0xFFFFFFFF : 0xFFAAAAAA);
 		}
 	}
 
@@ -283,15 +283,15 @@ public class CosmeticsScreen extends Screen {
 		if (tab == Cosmetics.Category.CAPE) {
 			String[] lines = {".png .jpg .gif", "go in the folder,", "then press Reload"};
 			for (int i = 0; i < lines.length; i++) {
-				ctx.drawString(font, lines[i], left(), ly + 50 + i * 10, 0xFF8A8A8A);
+				ctx.text(font, lines[i], left(), ly + 50 + i * 10, 0xFF8A8A8A);
 			}
 			if (!status.isEmpty()) {
-				ctx.drawString(font, font.plainSubstrByWidth(status, TAB_W + 40), left(), ly + 84, 0xFF7BE06A);
+				ctx.text(font, font.plainSubstrByWidth(status, TAB_W + 40), left(), ly + 84, 0xFF7BE06A);
 			}
 		} else if (tab == Cosmetics.Category.TOOL) {
 			String[] lines = {"Hold a sword,", "pickaxe, axe,", "shovel or hoe", "to see a skin."};
 			for (int i = 0; i < lines.length; i++) {
-				ctx.drawString(font, lines[i], left(), ly + i * 10, 0xFF8A8A8A);
+				ctx.text(font, lines[i], left(), ly + i * 10, 0xFF8A8A8A);
 			}
 		}
 	}
@@ -315,8 +315,8 @@ public class CosmeticsScreen extends Screen {
 			outline(ctx, x, y, x + CARD_W, y + CARD_H, border);
 
 			if (d == null) {
-				ctx.drawString(font, "None", x + 8, y + 8, 0xFFFFFFFF);
-				ctx.drawString(font, equipped ? "Equipped" : "Take it off", x + 8, y + 30,
+				ctx.text(font, "None", x + 8, y + 8, 0xFFFFFFFF);
+				ctx.text(font, equipped ? "Equipped" : "Take it off", x + 8, y + 30,
 						equipped ? 0xFF7BE06A : 0xFF8A8A8A);
 			} else {
 				ctx.fill(x + 6, y + 6, x + 26, y + 26, 0xFF1A1A22);
@@ -327,8 +327,8 @@ public class CosmeticsScreen extends Screen {
 				}
 				outline(ctx, x + 6, y + 6, x + 26, y + 26, 0xAA000000);
 				String name = font.plainSubstrByWidth(d.name(), CARD_W - 34);
-				ctx.drawString(font, name, x + 30, y + 12, 0xFFFFFFFF);
-				ctx.drawString(font, equipped ? "Equipped" : "Click to equip", x + 8, y + 31,
+				ctx.text(font, name, x + 30, y + 12, 0xFFFFFFFF);
+				ctx.text(font, equipped ? "Equipped" : "Click to equip", x + 8, y + 31,
 						equipped ? 0xFF7BE06A : 0xFF8A8A8A);
 			}
 		}
@@ -372,7 +372,7 @@ public class CosmeticsScreen extends Screen {
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.player == null) {
 			String msg = "Join a world to preview";
-			ctx.drawString(font, msg, px + (pw - font.width(msg)) / 2, py + mh / 2, 0xFF9A9A9A);
+			ctx.text(font, msg, px + (pw - font.width(msg)) / 2, py + mh / 2, 0xFF9A9A9A);
 			return;
 		}
 
@@ -388,14 +388,14 @@ public class CosmeticsScreen extends Screen {
 			PreviewSpin.active = false;
 		}
 		String hint = "Drag to turn";
-		ctx.drawString(font, hint, px + (pw - font.width(hint)) / 2, py + mh - 11, 0xFF777777);
+		ctx.text(font, hint, px + (pw - font.width(hint)) / 2, py + mh - 11, 0xFF777777);
 	}
 
 	private void drawSwatches(GuiGraphicsExtractor ctx, Cosmetics.Def def, int px, int y, int pw) {
 		ctx.fill(px + 1, y, px + pw - 1, y + 1, 0x33FFFFFF);
 		int chosen = Cosmetics.colorIndex(tab);
 		String label = "Color: " + Cosmetics.COLOR_NAMES[Math.max(0, Math.min(chosen, Cosmetics.COLOR_NAMES.length - 1))];
-		ctx.drawString(font, label, px + 7, y + 3, 0xFFCCCCCC);
+		ctx.text(font, label, px + 7, y + 3, 0xFFCCCCCC);
 		for (int i = 0; i < Cosmetics.COLOR_NAMES.length; i++) {
 			int x = swatchX(i);
 			int sy = swatchY(i);

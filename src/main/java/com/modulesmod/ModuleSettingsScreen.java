@@ -262,13 +262,13 @@ public class ModuleSettingsScreen extends Screen {
 	@Override
 	public void extractRenderState(GuiGraphicsExtractor ctx, int mouseX, int mouseY, float delta) {
 		super.extractRenderState(ctx, mouseX, mouseY, delta);
-		ctx.drawString(font, module.name, (width - font.width(module.name)) / 2, 4, 0xFFFFFFFF);
+		ctx.text(font, module.name, (width - font.width(module.name)) / 2, 4, 0xFFFFFFFF);
 
 		int left = (width - W) / 2;
 		int bottom = bottom();
 		for (Entry e : entries) {
 			if (e.y >= TOP && e.y + 20 <= bottom) {
-				ctx.drawString(font, e.setting.label, left, e.y + 6, 0xFFFFFFFF);
+				ctx.text(font, e.setting.label, left, e.y + 6, 0xFFFFFFFF);
 			}
 		}
 

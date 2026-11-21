@@ -57,7 +57,7 @@ public final class TabHud {
 		if (mc.isLocalServer() && listed.size() <= 1 && listObjective == null) return;
 
 		Font tr = mc.font;
-		PlayerTabOverlay vanillaHud = mc.gui.getTabList();
+		PlayerTabOverlay vanillaHud = mc.gui.hud.getTabList();
 
 		// ---- settings ----
 		int textColor = 0xFF000000 | HudUtil.rgb(Modules.T_TEXT_COLOR.str, 0xFFFFFF);
@@ -163,7 +163,7 @@ public final class TabHud {
 			ctx.fill(cx - headerW / 2 - 1, y - 1, cx + headerW / 2 + 1, y + hh, bg);
 			for (int i = 0; i < headerLines.size(); i++) {
 				FormattedCharSequence l = headerLines.get(i);
-				ctx.drawString(tr, l, cx - tr.width(l) / 2, y + i * 9, textColor, shadow);
+				ctx.text(tr, l, cx - tr.width(l) / 2, y + i * 9, textColor, shadow);
 			}
 			y += hh + 2;
 		}
@@ -191,7 +191,7 @@ public final class TabHud {
 					PlayerFaceRenderer.draw(ctx, cell.entry().getSkin(), cellX, cellY, 8);
 					nameX += 9;
 				}
-				ctx.drawString(tr, cell.name(), nameX, cellY, textColor, shadow);
+				ctx.text(tr, cell.name(), nameX, cellY, textColor, shadow);
 
 				if (pingStyle != 0) {
 					int ping = cell.entry().getLatency();
@@ -201,7 +201,7 @@ public final class TabHud {
 					} else {
 						String txt = pingText(ping);
 						int color = ping < 0 ? 0xFF808080 : pingColor(ping, pingColors);
-						ctx.drawString(tr, txt, pingX + pingW - tr.width(txt), cellY, color, shadow);
+						ctx.text(tr, txt, pingX + pingW - tr.width(txt), cellY, color, shadow);
 					}
 				}
 			}
@@ -214,7 +214,7 @@ public final class TabHud {
 			ctx.fill(cx - footerW / 2 - 1, y - 1, cx + footerW / 2 + 1, y + fh, bg);
 			for (int i = 0; i < footerLines.size(); i++) {
 				FormattedCharSequence l = footerLines.get(i);
-				ctx.drawString(tr, l, cx - tr.width(l) / 2, y + i * 9, textColor, shadow);
+				ctx.text(tr, l, cx - tr.width(l) / 2, y + i * 9, textColor, shadow);
 			}
 		}
 

@@ -101,7 +101,7 @@ public class CosmeticsScreen extends Screen {
 		} catch (Throwable t) {
 			status = "Folder: " + CustomImages.capesFolder();
 			Minecraft mc = Minecraft.getInstance();
-			if (mc.player != null) mc.gui.hud.getChat().addMessage(Component.literal("[Cosmetics] put pictures in " + CustomImages.capesFolder()), (net.minecraft.network.chat.MessageSignature) null, (net.minecraft.client.multiplayer.chat.GuiMessageTag) null);
+			if (mc.player != null) mc.gui.hud.getChat().addClientSystemMessage(Component.literal("[Cosmetics] put pictures in " + CustomImages.capesFolder()));
 		}
 	}
 

@@ -59,8 +59,7 @@ public final class ScoreboardHud {
 		PlayerTeam playerTeam = sb.getPlayersTeam(mc.player.getScoreboardName());
 		if (playerTeam != null) {
 			try {
-				DisplaySlot slot = DisplaySlot.valueOf(
-						"TEAM_" + playerTeam.getColor().getName().toUpperCase(Locale.ROOT));
+				DisplaySlot slot = playerTeam.getColor().map(net.minecraft.world.scores.TeamColor::displaySlot).orElseThrow(() -> new IllegalArgumentException());
 				obj = sb.getDisplayObjective(slot);
 			} catch (IllegalArgumentException ignored) {
 				// team has no colour slot (e.g. RESET) -> fall back to the sidebar

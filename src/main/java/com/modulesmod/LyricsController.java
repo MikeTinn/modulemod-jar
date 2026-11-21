@@ -511,10 +511,10 @@ public final class LyricsController {
 		if (mc.player == null) return;
 		MediaReader.Track t = MediaReader.get();
 		String song = t == null ? "none detected" : t.artist() + " - " + t.title() + (t.playing() ? " (playing)" : " (paused)");
-		mc.gui.hud.getChat().addMessage(Component.literal("[Lyrics] song: " + song), (net.minecraft.network.chat.MessageSignature) null, (net.minecraft.client.multiplayer.chat.GuiMessageTag) null);
-		mc.gui.hud.getChat().addMessage(Component.literal("[Lyrics] status: " + Diagnostics.lyrics), (net.minecraft.network.chat.MessageSignature) null, (net.minecraft.client.multiplayer.chat.GuiMessageTag) null);
+		mc.gui.hud.getChat().addClientSystemMessage(Component.literal("[Lyrics] song: " + song));
+		mc.gui.hud.getChat().addClientSystemMessage(Component.literal("[Lyrics] status: " + Diagnostics.lyrics));
 		if (!Modules.LYRICS.isEnabled()) {
-			mc.gui.hud.getChat().addMessage(Component.literal("[Lyrics] the module is switched off, so nothing is looked up"), (net.minecraft.network.chat.MessageSignature) null, (net.minecraft.client.multiplayer.chat.GuiMessageTag) null);
+			mc.gui.hud.getChat().addClientSystemMessage(Component.literal("[Lyrics] the module is switched off, so nothing is looked up"));
 		}
 	}
 }

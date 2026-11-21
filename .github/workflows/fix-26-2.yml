@@ -1,11 +1,8 @@
-name: Fix 26.2 part 5
+name: API dump
 on: workflow_dispatch
 
-permissions:
-  contents: write
-
 jobs:
-  fix:
+  dump:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -17,69 +14,13 @@ jobs:
         with:
           gradle-version: 9.5.1
 
-      - name: Rewrite outline mixin
-        run: |
-          cat > src/main/java/com/modulesmod/mixin/WorldRendererMixin.java <<'JAVA'
-          package com.modulesmod.mixin;
-
-          import com.modulesmod.BlockOutlineRenderer;
-          import com.modulesmod.Diagnostics;
-          import com.mojang.blaze3d.vertex.PoseStack;
-          import net.minecraft.client.renderer.LevelRenderer;
-          import net.minecraft.client.renderer.SubmitNodeCollector;
-          import net.minecraft.client.renderer.state.level.LevelRenderState;
-          import org.spongepowered.asm.mixin.Mixin;
-          import org.spongepowered.asm.mixin.injection.At;
-          import org.spongepowered.asm.mixin.injection.Inject;
-          import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-          /** Hides the vanilla block outline while the Block Outline module is drawing its own. */
-          @Mixin(LevelRenderer.class)
-          public class WorldRendererMixin {
-          	@Inject(method = "submitBlockOutline(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/level/LevelRenderState;)V",
-          			at = @At("HEAD"), cancellable = true, require = 0)
-          	private void modulesmod$replaceVanillaOutline(PoseStack poseStack, SubmitNodeCollector collector,
-          											  LevelRenderState state, CallbackInfo ci) {
-          		if (BlockOutlineRenderer.replacesVanilla()) {
-          			Diagnostics.outlineVanillaCancelled++;
-          			ci.cancel();
-          		}
-          	}
-          }
-          JAVA
-
-      - name: Apply renames
-        run: |
-          python3 - <<'PY'
-          import re, pathlib
-          for f in pathlib.Path("src/main/java").rglob("*.java"):
-              t = f.read_text(encoding="utf-8")
-              o = t
-              t = re.sub(r'getChat\(\)\.addMessage\((.*), \(net\.minecraft\.network\.chat\.MessageSignature\) null, \(net\.minecraft\.client\.multiplayer\.chat\.GuiMessageTag\) null\);',
-                         r'getChat().addClientSystemMessage(\1);', t)
-              t = re.sub(r'[A-Za-z.]*DisplaySlot\.valueOf\(\s*"TEAM_"\s*\+\s*playerTeam\.getColor\(\)\.getName\(\)\.toUpperCase\(Locale\.ROOT\)\s*\)',
-                         'playerTeam.getColor().map(net.minecraft.world.scores.TeamColor::displaySlot).orElseThrow(() -> new IllegalArgumentException())', t)
-              if t != o:
-                  f.write_text(t, encoding="utf-8")
-                  print("changed", f)
-          PY
-
-      - name: Commit
-        run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@users.noreply.github.com"
-          git add -A
-          git diff --cached --quiet || (git commit -m "26.2 API renames part 5" && git push)
-
-      - name: Build and report
-        id: build
+      - name: Build (just to download Minecraft)
         continue-on-error: true
+        run: gradle build --console=plain > build.log 2>&1
+
+      - name: Make dump
         run: |
           set +e
-          gradle build --console=plain > build.log 2>&1
-          code=$?
-          sed -n '1,/FAILURE:/p' build.log | grep -E -A2 "error:" | sed 's#/home/runner/work/[^/]*/[^/]*/src/main/java/com/modulesmod/##' > errors.txt
-          cat errors.txt
           CP=$(find ~/.gradle -name '*.jar' | grep -i -E 'minecraft|blaze|mojang' | grep -v -e sources -e fabric-api -e fabric-loader | tr '\n' ':')
           for j in $(echo "$CP" | tr ':' ' '); do unzip -Z1 "$j" 2>/dev/null | grep -E '^(net/minecraft|com/mojang)/.*\.class$' | sed "s#\$# $j#"; done > classes.txt
           fqn() { grep -E "/$1\.class " classes.txt | awk '{print $1}' | sed 's#/#.#g; s#\.class$##' | head -1; }
@@ -102,32 +43,13 @@ jobs:
             show LevelRenderer 'ebug|izmo|Hitbox|hitbox'
             show EntityRenderDispatcher 'itbox|ebug'
             show ItemModelResolver 'update|clear'
-            show ItemModelManager 'update|clear'
             show MouseHandler 'croll'
             show PlayerTabOverlay 'ender|xtract'
             show AvatarRenderer 'xtract|ender|Cape|cape'
             show AvatarRenderState 'ape'
-            show Level 'ain|hunder|ime|Gradient'
             show ClientLevel 'ain|hunder|ime|Gradient'
           } > api.txt 2>&1
           wc -l api.txt
-          exit $code
 
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: api-dump
-          path: |
-            api.txt
-            errors.txt
-            build.log
-
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: modulesmod-jar
-          path: build/libs/modulesmod-*.jar
-
-      - name: Fail if the build failed
-        if: steps.build.outcome == 'failure'
-        run: exit 1
+      - name: Show dump (copy everything from this step)
+        run: cat api.txt

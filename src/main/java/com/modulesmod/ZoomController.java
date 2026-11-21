@@ -2,7 +2,7 @@ package com.modulesmod;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.Identifier;
@@ -41,12 +41,12 @@ public final class ZoomController {
 
 	public static void register() {
 		category = KeyMapping.Category.register(Identifier.fromNamespaceAndPath(ModulesMod.MOD_ID, "main"));
-		zoomKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
+		zoomKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
 				"key.modulesmod.zoom", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_C, category));
 		// unbound by default; handy if you don't have a scroll wheel
-		zoomInKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
+		zoomInKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
 				"key.modulesmod.zoom_in", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, category));
-		zoomOutKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
+		zoomOutKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
 				"key.modulesmod.zoom_out", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, category));
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
@@ -62,7 +62,7 @@ public final class ZoomController {
 	}
 
 	private static boolean wantsZoom(Minecraft mc) {
-		if (!Modules.ZOOM.isEnabled() || mc.player == null || mc.screen != null) return false;
+		if (!Modules.ZOOM.isEnabled() || mc.player == null || mc.gui.screen() != null) return false;
 		return Modules.ZM_MODE.index() == 1 ? toggled : zoomKey.isDown();
 	}
 

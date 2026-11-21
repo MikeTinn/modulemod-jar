@@ -32,7 +32,7 @@ public final class Upscaler {
 
 	private static double wanted(Minecraft mc) {
 		if (failed || !Modules.UPSCALER.isEnabled()) return 1.0;
-		if (mc.screen != null && Modules.UP_MENUS.bool) return 1.0;
+		if (mc.gui.screen() != null && Modules.UP_MENUS.bool) return 1.0;
 		return Math.max(0.25, Math.min(1.0, Modules.UP_SCALE.num / 100.0));
 	}
 

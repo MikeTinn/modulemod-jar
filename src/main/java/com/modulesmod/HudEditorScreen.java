@@ -1,7 +1,7 @@
 package com.modulesmod;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -38,12 +38,12 @@ public class HudEditorScreen extends Screen {
 	@Override
 	public void onClose() {
 		Modules.save();
-		minecraft.setScreen(parent);
+		minecraft.gui.setScreen(parent);
 	}
 
 	@Override
-	public void render(GuiGraphics ctx, int mouseX, int mouseY, float delta) {
-		super.render(ctx, mouseX, mouseY, delta);
+	public void extractRenderState(GuiGraphicsExtractor ctx, int mouseX, int mouseY, float delta) {
+		super.extractRenderState(ctx, mouseX, mouseY, delta);
 
 		String title = "Drag the HUDs where you want them";
 		ctx.drawString(font, title, (width - font.width(title)) / 2, 8, 0xFFFFFFFF);
@@ -71,7 +71,7 @@ public class HudEditorScreen extends Screen {
 		}
 	}
 
-	private static void outline(GuiGraphics ctx, int x1, int y1, int x2, int y2, int color) {
+	private static void outline(GuiGraphicsExtractor ctx, int x1, int y1, int x2, int y2, int color) {
 		ctx.fill(x1, y1, x2, y1 + 1, color);
 		ctx.fill(x1, y2 - 1, x2, y2, color);
 		ctx.fill(x1, y1, x1 + 1, y2, color);

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
@@ -101,7 +101,7 @@ public class ModuleSettingsScreen extends Screen {
 				.bounds(width / 2 - 155, height - 28, 150, 20).build());
 		addRenderableWidget(Button.builder(Component.literal("Save & Quit"), b -> {
 			Modules.save();
-			minecraft.setScreen(parent);
+			minecraft.gui.setScreen(parent);
 		}).bounds(width / 2 + 5, height - 28, 150, 20).build());
 
 		// up / down arrows next to the scrollbar (shown only when the list is longer than the screen)
@@ -132,7 +132,7 @@ public class ModuleSettingsScreen extends Screen {
 			case INT, TEXT -> textField(s, x);
 
 			// colors open a real color picker instead of asking for hex codes
-			case HEX -> Button.builder(colorText(s), b -> minecraft.setScreen(new ColorPickerScreen(this, s)))
+			case HEX -> Button.builder(colorText(s), b -> minecraft.gui.setScreen(new ColorPickerScreen(this, s)))
 					.bounds(x, 0, 145, 20).build();
 
 			case PRESET -> Button.builder(Component.literal(AspectPresets.label(s.linked.num)), b -> {
@@ -256,12 +256,12 @@ public class ModuleSettingsScreen extends Screen {
 		for (int i = 0; i < module.settings.size(); i++) {
 			module.settings.get(i).restore(snapshot.get(i));
 		}
-		minecraft.setScreen(parent);
+		minecraft.gui.setScreen(parent);
 	}
 
 	@Override
-	public void render(GuiGraphics ctx, int mouseX, int mouseY, float delta) {
-		super.render(ctx, mouseX, mouseY, delta);
+	public void extractRenderState(GuiGraphicsExtractor ctx, int mouseX, int mouseY, float delta) {
+		super.extractRenderState(ctx, mouseX, mouseY, delta);
 		ctx.drawString(font, module.name, (width - font.width(module.name)) / 2, 4, 0xFFFFFFFF);
 
 		int left = (width - W) / 2;

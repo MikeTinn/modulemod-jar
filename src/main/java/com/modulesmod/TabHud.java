@@ -4,7 +4,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.PlayerFaceRenderer;
 import net.minecraft.client.gui.components.PlayerTabOverlay;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -37,14 +37,14 @@ public final class TabHud {
 	public static void register() {
 		HudElementRegistry.replaceElement(VanillaHudElements.PLAYER_LIST, vanilla -> (ctx, tickCounter) -> {
 			if (!Modules.TAB.isEnabled()) {
-				vanilla.render(ctx, tickCounter);
+				vanilla.extractRenderState(ctx, tickCounter);
 				return;
 			}
 			render(ctx);
 		});
 	}
 
-	private static void render(GuiGraphics ctx) {
+	private static void render(GuiGraphicsExtractor ctx) {
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.level == null || mc.player == null) return;
 		ClientPacketListener nh = mc.getConnection();
@@ -233,7 +233,7 @@ public final class TabHud {
 		return c[4];
 	}
 
-	private static void drawBars(GuiGraphics ctx, int x, int y, int ping, int[] colors) {
+	private static void drawBars(GuiGraphicsExtractor ctx, int x, int y, int ping, int[] colors) {
 		int filled = ping < 0 ? 0 : ping < 150 ? 5 : ping < 300 ? 4 : ping < 600 ? 3 : ping < 1000 ? 2 : 1;
 		int color = ping < 0 ? 0xFF808080 : pingColor(ping, colors);
 		int[] heights = {2, 3, 5, 6, 8};

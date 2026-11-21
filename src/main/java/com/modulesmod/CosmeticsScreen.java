@@ -2,7 +2,7 @@ package com.modulesmod;
 
 import java.util.List;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -101,13 +101,13 @@ public class CosmeticsScreen extends Screen {
 		} catch (Throwable t) {
 			status = "Folder: " + CustomImages.capesFolder();
 			Minecraft mc = Minecraft.getInstance();
-			if (mc.player != null) mc.player.displayClientMessage(Component.literal("[Cosmetics] put pictures in " + CustomImages.capesFolder()), false);
+			if (mc.player != null) mc.gui.getChat().addMessage(Component.literal("[Cosmetics] put pictures in " + CustomImages.capesFolder()));
 		}
 	}
 
 	@Override
 	public void onClose() {
-		minecraft.setScreen(parent);
+		minecraft.gui.setScreen(parent);
 	}
 
 	// ------------------------------------------------------------------ cards
@@ -246,7 +246,7 @@ public class CosmeticsScreen extends Screen {
 	// ------------------------------------------------------------------ drawing
 
 	@Override
-	public void render(GuiGraphics ctx, int mouseX, int mouseY, float delta) {
+	public void extractRenderState(GuiGraphicsExtractor ctx, int mouseX, int mouseY, float delta) {
 		if (autoSpin) angle += delta * 0.08f;
 		scroll = Math.max(0, Math.min(maxScroll(), scroll));
 
@@ -254,7 +254,7 @@ public class CosmeticsScreen extends Screen {
 		openFolder.visible = capes;
 		reload.visible = capes;
 
-		super.render(ctx, mouseX, mouseY, delta);
+		super.extractRenderState(ctx, mouseX, mouseY, delta);
 		ctx.drawString(font, "Cosmetics", (width - font.width("Cosmetics")) / 2, 8, 0xFFFFFFFF);
 		String sub = "Only you can see these";
 		ctx.drawString(font, sub, (width - font.width(sub)) / 2, 20, 0xFF888888);
@@ -265,7 +265,7 @@ public class CosmeticsScreen extends Screen {
 		drawPreview(ctx);
 	}
 
-	private void drawTabs(GuiGraphics ctx, int mouseX, int mouseY) {
+	private void drawTabs(GuiGraphicsExtractor ctx, int mouseX, int mouseY) {
 		Cosmetics.Category[] tabs = Cosmetics.Category.values();
 		for (int i = 0; i < tabs.length; i++) {
 			int x = left();
@@ -278,7 +278,7 @@ public class CosmeticsScreen extends Screen {
 		}
 	}
 
-	private void drawLeftNotes(GuiGraphics ctx) {
+	private void drawLeftNotes(GuiGraphicsExtractor ctx) {
 		int ly = TOP + Cosmetics.Category.values().length * (TAB_H + 2) + 8;
 		if (tab == Cosmetics.Category.CAPE) {
 			String[] lines = {".png .jpg .gif", "go in the folder,", "then press Reload"};
@@ -296,7 +296,7 @@ public class CosmeticsScreen extends Screen {
 		}
 	}
 
-	private void drawCards(GuiGraphics ctx, int mouseX, int mouseY) {
+	private void drawCards(GuiGraphicsExtractor ctx, int mouseX, int mouseY) {
 		List<Cosmetics.Def> items = items();
 		String current = Cosmetics.selectedId(tab);
 
@@ -344,7 +344,7 @@ public class CosmeticsScreen extends Screen {
 	}
 
 	/** Draws a 16x16 ARGB picture with filled rectangles (one per run of the same colour). */
-	private static void drawIcon(GuiGraphics ctx, int[] argb, int x, int y) {
+	private static void drawIcon(GuiGraphicsExtractor ctx, int[] argb, int x, int y) {
 		for (int row = 0; row < 16; row++) {
 			int col = 0;
 			while (col < 16) {
@@ -357,7 +357,7 @@ public class CosmeticsScreen extends Screen {
 		}
 	}
 
-	private void drawPreview(GuiGraphics ctx) {
+	private void drawPreview(GuiGraphicsExtractor ctx) {
 		int px = previewX();
 		int py = TOP;
 		int pw = PREVIEW_W;
@@ -391,7 +391,7 @@ public class CosmeticsScreen extends Screen {
 		ctx.drawString(font, hint, px + (pw - font.width(hint)) / 2, py + mh - 11, 0xFF777777);
 	}
 
-	private void drawSwatches(GuiGraphics ctx, Cosmetics.Def def, int px, int y, int pw) {
+	private void drawSwatches(GuiGraphicsExtractor ctx, Cosmetics.Def def, int px, int y, int pw) {
 		ctx.fill(px + 1, y, px + pw - 1, y + 1, 0x33FFFFFF);
 		int chosen = Cosmetics.colorIndex(tab);
 		String label = "Color: " + Cosmetics.COLOR_NAMES[Math.max(0, Math.min(chosen, Cosmetics.COLOR_NAMES.length - 1))];
@@ -410,7 +410,7 @@ public class CosmeticsScreen extends Screen {
 		}
 	}
 
-	private static void outline(GuiGraphics ctx, int x1, int y1, int x2, int y2, int color) {
+	private static void outline(GuiGraphicsExtractor ctx, int x1, int y1, int x2, int y2, int color) {
 		ctx.fill(x1, y1, x2, y1 + 1, color);
 		ctx.fill(x1, y2 - 1, x2, y2, color);
 		ctx.fill(x1, y1, x1 + 1, y2, color);

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -131,7 +131,7 @@ public final class ArmorHud {
 	}
 
 	/** Draws the panel with its top-left corner at (0, 0); the movable-HUD system has already moved and scaled. */
-	static void draw(GuiGraphics ctx, Minecraft mc, boolean preview) {
+	static void draw(GuiGraphicsExtractor ctx, Minecraft mc, boolean preview) {
 		Layout l = layout(mc, preview);
 		if (l == null) return;
 		Font tr = mc.font;
@@ -146,7 +146,7 @@ public final class ArmorHud {
 		}
 	}
 
-	private static void drawModern(GuiGraphics ctx, Font tr, Cell c, Place p, boolean vertical,
+	private static void drawModern(GuiGraphicsExtractor ctx, Font tr, Cell c, Place p, boolean vertical,
 								   boolean showBar, boolean showBg, int bgColor, boolean shadow) {
 		if (showBg) ctx.fill(p.x(), p.y(), p.x() + p.w(), p.y() + p.h(), bgColor);
 
@@ -173,7 +173,7 @@ public final class ArmorHud {
 		}
 	}
 
-	private static void drawVanilla(GuiGraphics ctx, Font tr, Cell c, Place p, boolean vertical, boolean shadow) {
+	private static void drawVanilla(GuiGraphicsExtractor ctx, Font tr, Cell c, Place p, boolean vertical, boolean shadow) {
 		if (vertical) {
 			ctx.renderItem(c.stack(), p.x(), p.y());
 			ctx.renderItemDecorations(tr, c.stack(), p.x(), p.y()); // vanilla durability bar
@@ -190,7 +190,7 @@ public final class ArmorHud {
 		}
 	}
 
-	private static void drawBar(GuiGraphics ctx, int x, int y, int width, Cell c) {
+	private static void drawBar(GuiGraphicsExtractor ctx, int x, int y, int width, Cell c) {
 		ctx.fill(x, y, x + width, y + 2, 0xFF202020);
 		int filled = Math.max(c.fraction() > 0 ? 1 : 0, Math.round(width * c.fraction()));
 		ctx.fill(x, y, x + filled, y + 2, c.color());

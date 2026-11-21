@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
@@ -90,12 +90,12 @@ public class ChatSearchScreen extends Screen {
 
 	@Override
 	public void onClose() {
-		minecraft.setScreen(parent);
+		minecraft.gui.setScreen(parent);
 	}
 
 	@Override
-	public void render(GuiGraphics ctx, int mouseX, int mouseY, float delta) {
-		super.render(ctx, mouseX, mouseY, delta);
+	public void extractRenderState(GuiGraphicsExtractor ctx, int mouseX, int mouseY, float delta) {
+		super.extractRenderState(ctx, mouseX, mouseY, delta);
 		ctx.drawString(font, "Chat Search", (width - font.width("Chat Search")) / 2, 4, 0xFFFFFFFF);
 
 		updateScrollBounds();

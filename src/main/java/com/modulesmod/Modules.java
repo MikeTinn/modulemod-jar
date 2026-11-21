@@ -104,7 +104,7 @@ public final class Modules {
 	public static final Setting CH_STACK_COLOR = Setting.hex("stackColor", "Stack Counter Color (hex)", "AAAAAA");
 	public static final Setting CH_SEARCH = Setting.action("search", "Chat Search", "Open Search", () -> {
 		net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
-		mc.setScreen(new ChatSearchScreen(mc.screen, ""));
+		mc.gui.setScreen(new ChatSearchScreen(mc.gui.screen(), ""));
 	});
 	public static final Setting CH_CLEAR_LOG = Setting.action("clearLog", "Search Log", "Clear Search Log",
 			ChatState.LOG::clear);
@@ -351,7 +351,7 @@ public final class Modules {
 	// ---- Cosmetics ----
 	public static final Setting CO_OPEN = Setting.action("open", "Cosmetics", "Open Cosmetics Screen", () -> {
 		net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
-		mc.setScreen(new CosmeticsScreen(mc.screen));
+		mc.gui.setScreen(new CosmeticsScreen(mc.gui.screen()));
 	});
 
 	public static final Setting CO_HIDE_CAPE = Setting.bool("hideOwnCape", "Hide My Own Cape", true);

@@ -2,7 +2,7 @@ package com.modulesmod;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.message.v1.ClientSendMessageEvents;
 import net.minecraft.client.Minecraft;
@@ -35,8 +35,8 @@ public class ModulesMod implements ClientModInitializer {
 
 		// /modulesmod status : shows which hooks are actually running (useful when something doesn't work)
 		ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> dispatcher.register(
-				ClientCommandManager.literal("modulesmod")
-						.then(ClientCommandManager.literal("status").executes(ctx -> {
+				ClientCommands.literal("modulesmod")
+						.then(ClientCommands.literal("status").executes(ctx -> {
 							ctx.getSource().sendFeedback(Component.literal("Modules Mod status (counts since the game started):"));
 							ctx.getSource().sendFeedback(Component.literal(" chat messages processed: " + Diagnostics.chatTransform));
 							ctx.getSource().sendFeedback(Component.literal(" chat stacking hook ran: " + Diagnostics.chatStackHook));
@@ -60,12 +60,12 @@ public class ModulesMod implements ClientModInitializer {
 
 		// /chatsearch [text]
 		ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> dispatcher.register(
-				ClientCommandManager.literal("chatsearch")
+				ClientCommands.literal("chatsearch")
 						.executes(ctx -> {
 							openSearch("");
 							return 1;
 						})
-						.then(ClientCommandManager.argument("text", StringArgumentType.greedyString())
+						.then(ClientCommands.argument("text", StringArgumentType.greedyString())
 								.executes(ctx -> {
 									openSearch(StringArgumentType.getString(ctx, "text"));
 									return 1;
@@ -74,6 +74,6 @@ public class ModulesMod implements ClientModInitializer {
 
 	private static void openSearch(String query) {
 		Minecraft mc = Minecraft.getInstance();
-		mc.schedule(() -> mc.setScreen(new ChatSearchScreen(null, query)));
+		mc.schedule(() -> mc.gui.setScreen(new ChatSearchScreen(null, query)));
 	}
 }

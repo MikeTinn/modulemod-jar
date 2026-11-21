@@ -3,7 +3,7 @@ package com.modulesmod;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
@@ -78,18 +78,18 @@ public class ModuleListScreen extends Screen {
 		setInitialFocus(search);
 
 		// the cosmetics screen: capes, wings, hats, jackets, pets
-		addRenderableWidget(Button.builder(Component.literal("Cosmetics"), b -> minecraft.setScreen(new CosmeticsScreen(this)))
+		addRenderableWidget(Button.builder(Component.literal("Cosmetics"), b -> minecraft.gui.setScreen(new CosmeticsScreen(this)))
 				.bounds(left + W - 148, 16, 74, 20).build());
 
 		// opens the HUD editor, where you drag the HUDs to where you want them
-		addRenderableWidget(Button.builder(Component.literal("Move HUDs"), b -> minecraft.setScreen(new HudEditorScreen(this)))
+		addRenderableWidget(Button.builder(Component.literal("Move HUDs"), b -> minecraft.gui.setScreen(new HudEditorScreen(this)))
 				.bounds(left + W - 70, 16, 70, 20).build());
 
 		for (Module m : Modules.ALL) {
 			if (!query.isEmpty() && !m.name.toLowerCase().contains(query.toLowerCase())) continue;
 
 			Button button = Button.builder(Component.empty(),
-					b -> minecraft.setScreen(new ModuleSettingsScreen(this, m)))
+					b -> minecraft.gui.setScreen(new ModuleSettingsScreen(this, m)))
 					.bounds(left, 0, W - TOGGLE_W - 6, ROW_H).build();
 			addRenderableWidget(button);
 
@@ -189,12 +189,12 @@ public class ModuleListScreen extends Screen {
 
 	@Override
 	public void onClose() {
-		minecraft.setScreen(parent);
+		minecraft.gui.setScreen(parent);
 	}
 
 	@Override
-	public void render(GuiGraphics ctx, int mouseX, int mouseY, float delta) {
-		super.render(ctx, mouseX, mouseY, delta);
+	public void extractRenderState(GuiGraphicsExtractor ctx, int mouseX, int mouseY, float delta) {
+		super.extractRenderState(ctx, mouseX, mouseY, delta);
 		ctx.drawString(font, "Modules", (width - font.width("Modules")) / 2, 4, 0xFFFFFFFF);
 
 		int bottom = bottom();
@@ -212,7 +212,7 @@ public class ModuleListScreen extends Screen {
 		}
 	}
 
-	private void drawRow(GuiGraphics ctx, Row r) {
+	private void drawRow(GuiGraphicsExtractor ctx, Row r) {
 		Module m = r.module;
 		int x = r.button.getX();
 		int y = r.button.getY();

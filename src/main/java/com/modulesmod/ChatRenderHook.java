@@ -1,7 +1,7 @@
 package com.modulesmod;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 /** Wraps the vanilla chat drawing: slides new messages in and optionally overrides the background opacity. */
 public final class ChatRenderHook {
@@ -10,7 +10,7 @@ public final class ChatRenderHook {
 
 	private ChatRenderHook() {}
 
-	public static void begin(GuiGraphics ctx) {
+	public static void begin(GuiGraphicsExtractor ctx) {
 		double chatScale = ChatState.lastChatScale;
 		pushed = false;
 		savedBackground = null;
@@ -37,7 +37,7 @@ public final class ChatRenderHook {
 		}
 	}
 
-	public static void end(GuiGraphics ctx) {
+	public static void end(GuiGraphicsExtractor ctx) {
 		if (pushed) {
 			ctx.pose().popMatrix();
 			pushed = false;

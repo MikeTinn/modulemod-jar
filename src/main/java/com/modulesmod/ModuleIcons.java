@@ -1,6 +1,6 @@
 package com.modulesmod;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 /** Little pictograms for each module, drawn with plain rectangles (no image files needed). */
 final class ModuleIcons {
@@ -46,7 +46,7 @@ final class ModuleIcons {
 		return (a << 24) | (argb & 0xFFFFFF);
 	}
 
-	private static void outline(GuiGraphics c, int x1, int y1, int x2, int y2, int color) {
+	private static void outline(GuiGraphicsExtractor c, int x1, int y1, int x2, int y2, int color) {
 		c.fill(x1, y1, x2, y1 + 1, color);
 		c.fill(x1, y2 - 1, x2, y2, color);
 		c.fill(x1, y1, x1 + 1, y2, color);
@@ -54,7 +54,7 @@ final class ModuleIcons {
 	}
 
 	/** Draws a 28x28 icon with its top-left corner at (x, y). Dimmed when the module is off. */
-	static void draw(GuiGraphics c, String id, int x, int y, boolean enabled) {
+	static void draw(GuiGraphicsExtractor c, String id, int x, int y, boolean enabled) {
 		int accent = enabled ? accent(id) : dim(accent(id));
 		int light = enabled ? LIGHT : 0xFF707070;
 

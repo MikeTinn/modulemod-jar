@@ -1,7 +1,7 @@
 package com.modulesmod;
 
 import java.util.Locale;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
@@ -60,7 +60,7 @@ public class ColorPickerScreen extends Screen {
 
 		addRenderableWidget(Button.builder(Component.literal("Cancel"), b -> onClose())
 				.bounds(width / 2 - 105, height - 28, 100, 20).build());
-		addRenderableWidget(Button.builder(Component.literal("Done"), b -> minecraft.setScreen(parent))
+		addRenderableWidget(Button.builder(Component.literal("Done"), b -> minecraft.gui.setScreen(parent))
 				.bounds(width / 2 + 5, height - 28, 100, 20).build());
 	}
 
@@ -68,7 +68,7 @@ public class ColorPickerScreen extends Screen {
 	@Override
 	public void onClose() {
 		setting.str = original;
-		minecraft.setScreen(parent);
+		minecraft.gui.setScreen(parent);
 	}
 
 	// ---------- color maths ----------
@@ -196,8 +196,8 @@ public class ColorPickerScreen extends Screen {
 
 	// ---------- drawing ----------
 	@Override
-	public void render(GuiGraphics ctx, int mouseX, int mouseY, float delta) {
-		super.render(ctx, mouseX, mouseY, delta);
+	public void extractRenderState(GuiGraphicsExtractor ctx, int mouseX, int mouseY, float delta) {
+		super.extractRenderState(ctx, mouseX, mouseY, delta);
 		String title = "Pick a color";
 		ctx.drawString(font, title, (width - font.width(title)) / 2, 8, 0xFFFFFFFF);
 		String name = setting.label;

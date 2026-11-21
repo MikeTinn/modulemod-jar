@@ -511,10 +511,10 @@ public final class LyricsController {
 		if (mc.player == null) return;
 		MediaReader.Track t = MediaReader.get();
 		String song = t == null ? "none detected" : t.artist() + " - " + t.title() + (t.playing() ? " (playing)" : " (paused)");
-		mc.player.displayClientMessage(Component.literal("[Lyrics] song: " + song), false);
-		mc.player.displayClientMessage(Component.literal("[Lyrics] status: " + Diagnostics.lyrics), false);
+		mc.gui.getChat().addMessage(Component.literal("[Lyrics] song: " + song));
+		mc.gui.getChat().addMessage(Component.literal("[Lyrics] status: " + Diagnostics.lyrics));
 		if (!Modules.LYRICS.isEnabled()) {
-			mc.player.displayClientMessage(Component.literal("[Lyrics] the module is switched off, so nothing is looked up"), false);
+			mc.gui.getChat().addMessage(Component.literal("[Lyrics] the module is switched off, so nothing is looked up"));
 		}
 	}
 }

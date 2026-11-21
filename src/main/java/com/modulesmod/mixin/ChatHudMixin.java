@@ -4,7 +4,7 @@ import com.modulesmod.ChatRenderHook;
 import com.modulesmod.ChatState;
 import com.modulesmod.ChatTransformer;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.ChatComponent;
 import net.minecraft.network.chat.Component;
 import org.spongepowered.asm.mixin.Mixin;
@@ -49,16 +49,16 @@ public class ChatHudMixin {
 		ChatState.lastChatScale = value;
 	}
 
-	@Inject(method = "render(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Font;IIIZZ)V",
+	@Inject(method = "render(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/gui/Font;IIIZZ)V",
 			at = @At("HEAD"), require = 0)
-	private void modulesmod$renderHead(GuiGraphics ctx, Font tr, int tick, int mouseX, int mouseY,
+	private void modulesmod$renderHead(GuiGraphicsExtractor ctx, Font tr, int tick, int mouseX, int mouseY,
 									   boolean a, boolean b, CallbackInfo ci) {
 		ChatRenderHook.begin(ctx);
 	}
 
-	@Inject(method = "render(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Font;IIIZZ)V",
+	@Inject(method = "render(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/gui/Font;IIIZZ)V",
 			at = @At("RETURN"), require = 0)
-	private void modulesmod$renderReturn(GuiGraphics ctx, Font tr, int tick, int mouseX, int mouseY,
+	private void modulesmod$renderReturn(GuiGraphicsExtractor ctx, Font tr, int tick, int mouseX, int mouseY,
 										 boolean a, boolean b, CallbackInfo ci) {
 		ChatRenderHook.end(ctx);
 	}

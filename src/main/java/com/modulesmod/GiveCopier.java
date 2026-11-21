@@ -1,7 +1,7 @@
 package com.modulesmod;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -27,7 +27,7 @@ public final class GiveCopier {
 	private GiveCopier() {}
 
 	public static void register() {
-		copyKey = KeyBindingHelper.registerKeyBinding(new KeyMapping(
+		copyKey = KeyMappingHelper.registerKeyMapping(new KeyMapping(
 				"key.modulesmod.copy_give", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_G, ZoomController.category()));
 
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
@@ -58,7 +58,7 @@ public final class GiveCopier {
 	}
 
 	private static void say(Minecraft mc, String message) {
-		if (mc.player != null) mc.player.displayClientMessage(Component.literal(message), true);
+		if (mc.player != null) mc.gui.hud.setOverlayMessage(Component.literal(message), false);
 	}
 
 	private static String command(Minecraft mc, ItemStack stack) {

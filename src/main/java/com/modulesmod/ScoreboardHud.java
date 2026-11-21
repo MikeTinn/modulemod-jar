@@ -4,7 +4,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FontDescription;
 import net.minecraft.network.chat.numbers.NumberFormat;
@@ -41,14 +41,14 @@ public final class ScoreboardHud {
 	public static void register() {
 		HudElementRegistry.replaceElement(VanillaHudElements.SCOREBOARD, vanilla -> (ctx, tickCounter) -> {
 			if (!Modules.SCOREBOARD.isEnabled()) {
-				vanilla.render(ctx, tickCounter);
+				vanilla.extractRenderState(ctx, tickCounter);
 				return;
 			}
 			render(ctx);
 		});
 	}
 
-	private static void render(GuiGraphics ctx) {
+	private static void render(GuiGraphicsExtractor ctx) {
 		Minecraft mc = Minecraft.getInstance();
 		if (mc.level == null || mc.player == null) return;
 

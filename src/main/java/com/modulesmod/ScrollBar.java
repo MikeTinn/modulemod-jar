@@ -1,6 +1,6 @@
 package com.modulesmod;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 /** A scrollbar you can drag with the mouse (and click on the track to jump). Driven by the screen's mouse events. */
 final class ScrollBar {
@@ -40,7 +40,7 @@ final class ScrollBar {
 		dragging = false;
 	}
 
-	void draw(GuiGraphics ctx, int barX, int top, int bottom, int contentH, int scroll, int maxScroll) {
+	void draw(GuiGraphicsExtractor ctx, int barX, int top, int bottom, int contentH, int scroll, int maxScroll) {
 		int viewH = bottom - top;
 		int thumbH = thumbHeight(viewH, contentH);
 		int range = Math.max(1, viewH - thumbH);

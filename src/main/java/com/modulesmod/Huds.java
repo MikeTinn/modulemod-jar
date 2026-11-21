@@ -5,7 +5,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.InteractionResult;
@@ -55,7 +55,7 @@ public final class Huds {
 		abstract int height(Minecraft mc, boolean preview);
 
 		/** Draws at (0, 0); the caller has already moved and scaled the drawing space. */
-		abstract void draw(GuiGraphics ctx, Minecraft mc, boolean preview);
+		abstract void draw(GuiGraphicsExtractor ctx, Minecraft mc, boolean preview);
 
 		/** {x, y, width, height} on screen, after scaling and keeping it fully on screen. */
 		public int[] bounds(int screenW, int screenH, Minecraft mc, boolean preview) {
@@ -69,7 +69,7 @@ public final class Huds {
 			return new int[]{px, py, w, h};
 		}
 
-		public void render(GuiGraphics ctx, boolean preview) {
+		public void render(GuiGraphicsExtractor ctx, boolean preview) {
 			Minecraft mc = Minecraft.getInstance();
 			int[] b = bounds(ctx.guiWidth(), ctx.guiHeight(), mc, preview);
 			float s = (float) scale.num;
@@ -121,7 +121,7 @@ public final class Huds {
 		}
 
 		@Override
-		void draw(GuiGraphics ctx, Minecraft mc, boolean preview) {
+		void draw(GuiGraphicsExtractor ctx, Minecraft mc, boolean preview) {
 			String text = text(mc, preview);
 			int w = mc.font.width(text) + 8;
 			if (bg.bool) ctx.fill(0, 0, w, 15, HudUtil.alpha(bgOpacity.num) << 24);
@@ -238,7 +238,7 @@ public final class Huds {
 		}
 
 		@Override
-		void draw(GuiGraphics ctx, Minecraft mc, boolean preview) {
+		void draw(GuiGraphicsExtractor ctx, Minecraft mc, boolean preview) {
 			int w = width(mc, preview);
 			int h = height(mc, preview);
 			if (Modules.IH_BG.bool) ctx.fill(0, 0, w, h, HudUtil.alpha(Modules.IH_BG_OPACITY.num) << 24);
@@ -261,7 +261,7 @@ public final class Huds {
 			}
 		}
 
-		private static void drawSlot(GuiGraphics ctx, Font tr, ItemStack stack, int x, int y,
+		private static void drawSlot(GuiGraphicsExtractor ctx, Font tr, ItemStack stack, int x, int y,
 									 boolean showOutline, int outline, boolean counts) {
 			if (showOutline) {
 				ctx.fill(x, y, x + 18, y + 1, outline);
@@ -292,7 +292,7 @@ public final class Huds {
 		}
 
 		@Override
-		void draw(GuiGraphics ctx, Minecraft mc, boolean preview) {
+		void draw(GuiGraphicsExtractor ctx, Minecraft mc, boolean preview) {
 			ArmorHud.draw(ctx, mc, preview);
 		}
 	}
@@ -332,7 +332,7 @@ public final class Huds {
 		}
 
 		@Override
-		void draw(GuiGraphics ctx, Minecraft mc, boolean preview) {
+		void draw(GuiGraphicsExtractor ctx, Minecraft mc, boolean preview) {
 			LyricsController.HudLine line = LyricsController.hudLine();
 			if (line == null) {
 				if (!preview) return;
@@ -370,7 +370,7 @@ public final class Huds {
 			}
 		}
 
-		private static void drawRow(GuiGraphics ctx, Font tr, String text, int w, float y, float scale,
+		private static void drawRow(GuiGraphicsExtractor ctx, Font tr, String text, int w, float y, float scale,
 									float alpha, int rgb, boolean shadow) {
 			if (text.isEmpty() || alpha * 255f < 8f) return;
 			int tw = Math.max(1, tr.width(text));
@@ -382,7 +382,7 @@ public final class Huds {
 			ctx.pose().popMatrix();
 		}
 
-		private static void drawCurrent(GuiGraphics ctx, Font tr, LyricsController.HudLine line, int font,
+		private static void drawCurrent(GuiGraphicsExtractor ctx, Font tr, LyricsController.HudLine line, int font,
 										int w, float y, float scale, float alpha, int rgb, boolean shadow) {
 			if (alpha * 255f < 8f) return;
 			String sung = LyricsFonts.apply(line.sung(), font);

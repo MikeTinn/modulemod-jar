@@ -1,0 +1,90 @@
+name: Fix 26.2 API changes
+on: workflow_dispatch
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: 9.5.1
+
+      - name: Apply renames
+        run: |
+          python3 - <<'PY'
+          import re, pathlib
+
+          def msg(m):
+              expr, flag = m.group(2), m.group(3)
+              who = m.group(1)
+              if flag == "true":
+                  return f"{who}.gui.hud.setOverlayMessage({expr}, false)"
+              return f"{who}.gui.getChat().addMessage({expr})"
+
+          for f in pathlib.Path("src/main/java").rglob("*.java"):
+              t = f.read_text(encoding="utf-8")
+              o = t
+              # GuiGraphics -> GuiGraphicsExtractor, Screen.render -> extractRenderState
+              t = re.sub(r'\bGuiGraphics\b', 'GuiGraphicsExtractor', t)
+              t, n = re.subn(r'public void render\(GuiGraphicsExtractor (\w+), int (\w+), int (\w+), float (\w+)\)',
+                             r'public void extractRenderState(GuiGraphicsExtractor \1, int \2, int \3, float \4)', t)
+              if n:
+                  t = t.replace('super.render(', 'super.extractRenderState(')
+              # screen handling moved to Gui
+              t = re.sub(r'\b(minecraft|mc|client)\.setScreen\(', r'\1.gui.setScreen(', t)
+              t = re.sub(r'getInstance\(\)\.setScreen\(', 'getInstance().gui.setScreen(', t)
+              t = re.sub(r'\b(minecraft|mc|client)\.screen\b(?!\s*\()', r'\1.gui.screen()', t)
+              # Fabric API renames
+              t = t.replace('net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper',
+                            'net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper')
+              t = t.replace('KeyBindingHelper.registerKeyBinding', 'KeyMappingHelper.registerKeyMapping')
+              t = re.sub(r'\bKeyBindingHelper\b', 'KeyMappingHelper', t)
+              t = re.sub(r'\bClientCommandManager\b', 'ClientCommands', t)
+              t = re.sub(r'\bLivingEntityFeatureRendererRegistrationCallback\b',
+                         'LivingEntityRenderLayerRegistrationCallback', t)
+              # vanilla HUD element
+              t = t.replace('vanilla.render(', 'vanilla.extractRenderState(')
+              # player.displayClientMessage was removed
+              t = re.sub(r'\b(\w+)\.player\.displayClientMessage\((.*),\s*(true|false)\)', msg, t)
+              if t != o:
+                  f.write_text(t, encoding="utf-8")
+                  print("changed", f)
+
+          # show every compile error, not just the first 100
+          b = pathlib.Path("build.gradle")
+          s = b.read_text()
+          if "Xmaxerrs" not in s:
+              s = s.replace("it.options.release = 25",
+                            'it.options.release = 25\n\tit.options.compilerArgs.addAll(["-Xmaxerrs", "1000"])')
+              b.write_text(s)
+          PY
+
+      - name: Commit
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet || (git commit -m "26.2 API renames" && git push)
+
+      - name: Build
+        run: |
+          set +e
+          gradle build --console=plain > build.log 2>&1
+          code=$?
+          echo "=== COMPILE ERRORS ==="
+          sed -n '1,/FAILURE:/p' build.log | grep -E -A2 "error:" | sed 's#/home/runner/work/[^/]*/[^/]*/src/main/java/com/modulesmod/##' | head -600
+          exit $code
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: modulesmod-jar
+          path: build/libs/modulesmod-*.jar

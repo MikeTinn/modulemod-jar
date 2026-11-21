@@ -1,4 +1,4 @@
-name: Fix 26.2 part 3
+name: Fix 26.2 part 4
 on: workflow_dispatch
 
 permissions:
@@ -24,14 +24,14 @@ jobs:
           for f in pathlib.Path("src/main/java").rglob("*.java"):
               t = f.read_text(encoding="utf-8")
               o = t
-              t = t.replace('net.minecraft.client.GuiMessageTag', 'net.minecraft.client.multiplayer.chat.GuiMessageTag')
-              t = t.replace('net.minecraft.client.GuiMessage;', 'net.minecraft.client.multiplayer.chat.GuiMessage;')
-              t = t.replace('net.minecraft.client.renderer.state.LevelRenderState',
-                            'net.minecraft.client.renderer.state.level.LevelRenderState')
-              if f.name == "WorldRendererMixin.java":
-                  t = t.replace('import net.minecraft.client.renderer.MultiBufferSource;\n', '')
-                  t = t.replace('MultiBufferSource.BufferSource', 'Object')
-              t = re.sub(r'\bf\.setFilter\(.*\);', 'f.setMaxLength(11);', t)
+              # chat: only the 3-argument addMessage exists now
+              t = re.sub(r'getChat\(\)\.addMessage\((.*)\);',
+                         r'getChat().addMessage(\1, (net.minecraft.network.chat.MessageSignature) null, (net.minecraft.client.multiplayer.chat.GuiMessageTag) null);',
+                         t)
+              # EditBox has no setFilter any more
+              t = re.sub(r'\bhexField\.setFilter\(.*\);', 'hexField.setMaxLength(6);', t)
+              # menu player preview (extract naming)
+              t = t.replace('renderEntityInInventoryFollowsMouse', 'extractEntityInInventoryFollowsMouse')
               if t != o:
                   f.write_text(t, encoding="utf-8")
                   print("changed", f)
@@ -42,9 +42,9 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@users.noreply.github.com"
           git add -A
-          git diff --cached --quiet || (git commit -m "26.2 API renames part 3" && git push)
+          git diff --cached --quiet || (git commit -m "26.2 API renames part 4" && git push)
 
-      - name: Build
+      - name: Build and report
         id: build
         continue-on-error: true
         run: |
@@ -53,36 +53,24 @@ jobs:
           code=$?
           echo "=== COMPILE ERRORS ==="
           sed -n '1,/FAILURE:/p' build.log | grep -E -A2 "error:" | sed 's#/home/runner/work/[^/]*/[^/]*/src/main/java/com/modulesmod/##' | head -600
-          exit $code
-
-      - name: Dump 26.2 API signatures
-        if: always()
-        run: |
-          set +e
+          echo
+          echo "=== API SIGNATURES ==="
           CP=$(find ~/.gradle -name '*.jar' | grep -i minecraft | grep -v -e sources -e fabric-api -e fabric-loader | tr '\n' ':')
           for j in $(echo "$CP" | tr ':' ' '); do unzip -Z1 "$j" 2>/dev/null | grep '^net/minecraft/.*\.class$' | sed "s#\$# $j#"; done > classes.txt
           fqn() { grep -E "/$1\.class " classes.txt | awk '{print $1}' | sed 's#/#.#g; s#\.class$##' | head -1; }
           show() { F=$(fqn $1); echo "=== $1 ($F)"; if [ -n "$F" ]; then javap -p -cp "$CP" "$F" | grep -v lambda | grep -E "${2:-.}"; fi; true; }
           show EntityModel '.'
-          show Model 'etup|nim|root|ender'
-          show RenderLayer '.'
-          show ObjectContents '.'
-          show PlayerSprite '.'
-          show ResolvableProfile 'create|static'
-          show Team 'olor'
-          show TeamColor '.'
           show PlayerFaceExtractor '.'
-          show Minecraft 'ender[Tt]arget|RenderTarget'
+          show TeamColor '.'
+          show Team 'olor'
+          show Minecraft 'arget'
           show Options 'ide'
-          show LocalPlayer 'essage|verlay'
-          show HudElement '.'
-          show ChatComponent 'essage|ender|xtract'
+          show InventoryScreen 'ntity'
+          show ChatComponent 'ddMessage|ddClient'
           show LevelRenderer 'utline'
-          show GameRenderer 'rojection|etFov|ostEffect|ostProcess'
-          show LevelRenderer 'lvl'
-          show DebugRenderer 'render|extract|ubmit'
+          show GameRenderer 'rojection|etFov|ostEffect'
           show FogRenderer 'og'
-          true
+          exit $code
 
       - uses: actions/upload-artifact@v4
         if: always()

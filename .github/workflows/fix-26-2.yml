@@ -1,4 +1,4 @@
-name: Fix 26.2 part 2
+name: Fix 26.2 part 3
 on: workflow_dispatch
 
 permissions:
@@ -24,19 +24,14 @@ jobs:
           for f in pathlib.Path("src/main/java").rglob("*.java"):
               t = f.read_text(encoding="utf-8")
               o = t
-              # GuiGraphicsExtractor draw methods
-              t = re.sub(r'\b(ctx|c|g|graphics)\.drawString\(', r'\1.text(', t)
-              t = re.sub(r'\b(ctx|c|g|graphics)\.renderItemDecorations\(', r'\1.itemDecorations(', t)
-              t = re.sub(r'\b(ctx|c|g|graphics)\.renderItem\(', r'\1.item(', t)
-              # chat and tab list moved from Gui to Hud
-              t = t.replace('.gui.getChat()', '.gui.hud.getChat()')
-              t = t.replace('.gui.getTabList()', '.gui.hud.getTabList()')
-              # player layer: render -> submit
-              if f.name == "CosmeticsFeature.java":
-                  t = t.replace('public void render(PoseStack', 'public void submit(PoseStack')
-              # chat head object now takes a fallback component
-              t = re.sub(r'(new ObjectContents\(\s*new PlayerSprite\(.*?Modules\.CH_HEAD_HAT\.bool\))\)',
-                         r'\1, java.util.Optional.empty())', t, flags=re.S)
+              t = t.replace('net.minecraft.client.GuiMessageTag', 'net.minecraft.client.multiplayer.chat.GuiMessageTag')
+              t = t.replace('net.minecraft.client.GuiMessage;', 'net.minecraft.client.multiplayer.chat.GuiMessage;')
+              t = t.replace('net.minecraft.client.renderer.state.LevelRenderState',
+                            'net.minecraft.client.renderer.state.level.LevelRenderState')
+              if f.name == "WorldRendererMixin.java":
+                  t = t.replace('import net.minecraft.client.renderer.MultiBufferSource;\n', '')
+                  t = t.replace('MultiBufferSource.BufferSource', 'Object')
+              t = re.sub(r'\bf\.setFilter\(.*\);', 'f.setMaxLength(11);', t)
               if t != o:
                   f.write_text(t, encoding="utf-8")
                   print("changed", f)
@@ -47,7 +42,7 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@users.noreply.github.com"
           git add -A
-          git diff --cached --quiet || (git commit -m "26.2 API renames part 2" && git push)
+          git diff --cached --quiet || (git commit -m "26.2 API renames part 3" && git push)
 
       - name: Build
         id: build
@@ -63,28 +58,31 @@ jobs:
       - name: Dump 26.2 API signatures
         if: always()
         run: |
+          set +e
           CP=$(find ~/.gradle -name '*.jar' | grep -i minecraft | grep -v -e sources -e fabric-api -e fabric-loader | tr '\n' ':')
           for j in $(echo "$CP" | tr ':' ' '); do unzip -Z1 "$j" 2>/dev/null | grep '^net/minecraft/.*\.class$' | sed "s#\$# $j#"; done > classes.txt
-          fqn() { grep -E "/$1\.class " classes.txt | awk '{print $1}' | sed 's#/#.#g; s#\.class$##' | head -3; }
-          echo "=== WHERE CLASSES LIVE ==="
-          for n in GuiMessage GuiMessageTag MultiBufferSource LevelRenderState PlayerFaceExtractor PlayerFaceRenderer ChatComponent PlayerTabOverlay TeamColor RenderTarget; do echo "$n: $(fqn $n | tr '\n' ' ')"; done
-          show() { F=$(fqn $1 | head -1); echo "=== $1 ($F)"; if [ -n "$F" ]; then javap -p -cp "$CP" "$F" | grep -E "${2:-.}"; fi; }
-          show GuiGraphicsExtractor ' text\(| item\(| itemDecorations\(| fill\(|outline|blit\('
-          show EditBox 'ilter|Predicate|ormatter'
-          show Gui 'hat|ab|hud|creen'
-          show Hud 'hat|ab|verlay'
-          show EntityModel 'etup|nim|root'
-          show RenderLayer 'submit|render'
+          fqn() { grep -E "/$1\.class " classes.txt | awk '{print $1}' | sed 's#/#.#g; s#\.class$##' | head -1; }
+          show() { F=$(fqn $1); echo "=== $1 ($F)"; if [ -n "$F" ]; then javap -p -cp "$CP" "$F" | grep -v lambda | grep -E "${2:-.}"; fi; true; }
+          show EntityModel '.'
+          show Model 'etup|nim|root|ender'
+          show RenderLayer '.'
           show ObjectContents '.'
+          show PlayerSprite '.'
+          show ResolvableProfile 'create|static'
           show Team 'olor'
           show TeamColor '.'
           show PlayerFaceExtractor '.'
-          show Minecraft 'RenderTarget|renderTarget'
+          show Minecraft 'ender[Tt]arget|RenderTarget'
           show Options 'ide'
           show LocalPlayer 'essage|verlay'
           show HudElement '.'
           show ChatComponent 'essage|ender|xtract'
           show LevelRenderer 'utline'
+          show GameRenderer 'rojection|etFov|ostEffect|ostProcess'
+          show LevelRenderer 'lvl'
+          show DebugRenderer 'render|extract|ubmit'
+          show FogRenderer 'og'
+          true
 
       - uses: actions/upload-artifact@v4
         if: always()

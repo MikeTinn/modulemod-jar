@@ -1,4 +1,4 @@
-name: Fix 26.2 part 4
+name: Fix 26.2 part 5
 on: workflow_dispatch
 
 permissions:
@@ -17,6 +17,37 @@ jobs:
         with:
           gradle-version: 9.5.1
 
+      - name: Rewrite outline mixin
+        run: |
+          cat > src/main/java/com/modulesmod/mixin/WorldRendererMixin.java <<'JAVA'
+          package com.modulesmod.mixin;
+
+          import com.modulesmod.BlockOutlineRenderer;
+          import com.modulesmod.Diagnostics;
+          import com.mojang.blaze3d.vertex.PoseStack;
+          import net.minecraft.client.renderer.LevelRenderer;
+          import net.minecraft.client.renderer.SubmitNodeCollector;
+          import net.minecraft.client.renderer.state.level.LevelRenderState;
+          import org.spongepowered.asm.mixin.Mixin;
+          import org.spongepowered.asm.mixin.injection.At;
+          import org.spongepowered.asm.mixin.injection.Inject;
+          import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+          /** Hides the vanilla block outline while the Block Outline module is drawing its own. */
+          @Mixin(LevelRenderer.class)
+          public class WorldRendererMixin {
+          	@Inject(method = "submitBlockOutline(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/level/LevelRenderState;)V",
+          			at = @At("HEAD"), cancellable = true, require = 0)
+          	private void modulesmod$replaceVanillaOutline(PoseStack poseStack, SubmitNodeCollector collector,
+          											  LevelRenderState state, CallbackInfo ci) {
+          		if (BlockOutlineRenderer.replacesVanilla()) {
+          			Diagnostics.outlineVanillaCancelled++;
+          			ci.cancel();
+          		}
+          	}
+          }
+          JAVA
+
       - name: Apply renames
         run: |
           python3 - <<'PY'
@@ -24,14 +55,10 @@ jobs:
           for f in pathlib.Path("src/main/java").rglob("*.java"):
               t = f.read_text(encoding="utf-8")
               o = t
-              # chat: only the 3-argument addMessage exists now
-              t = re.sub(r'getChat\(\)\.addMessage\((.*)\);',
-                         r'getChat().addMessage(\1, (net.minecraft.network.chat.MessageSignature) null, (net.minecraft.client.multiplayer.chat.GuiMessageTag) null);',
-                         t)
-              # EditBox has no setFilter any more
-              t = re.sub(r'\bhexField\.setFilter\(.*\);', 'hexField.setMaxLength(6);', t)
-              # menu player preview (extract naming)
-              t = t.replace('renderEntityInInventoryFollowsMouse', 'extractEntityInInventoryFollowsMouse')
+              t = re.sub(r'getChat\(\)\.addMessage\((.*), \(net\.minecraft\.network\.chat\.MessageSignature\) null, \(net\.minecraft\.client\.multiplayer\.chat\.GuiMessageTag\) null\);',
+                         r'getChat().addClientSystemMessage(\1);', t)
+              t = re.sub(r'[A-Za-z.]*DisplaySlot\.valueOf\(\s*"TEAM_"\s*\+\s*playerTeam\.getColor\(\)\.getName\(\)\.toUpperCase\(Locale\.ROOT\)\s*\)',
+                         'playerTeam.getColor().map(net.minecraft.world.scores.TeamColor::displaySlot).orElseThrow(() -> new IllegalArgumentException())', t)
               if t != o:
                   f.write_text(t, encoding="utf-8")
                   print("changed", f)
@@ -42,7 +69,7 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@users.noreply.github.com"
           git add -A
-          git diff --cached --quiet || (git commit -m "26.2 API renames part 4" && git push)
+          git diff --cached --quiet || (git commit -m "26.2 API renames part 5" && git push)
 
       - name: Build and report
         id: build
@@ -51,26 +78,49 @@ jobs:
           set +e
           gradle build --console=plain > build.log 2>&1
           code=$?
-          echo "=== COMPILE ERRORS ==="
-          sed -n '1,/FAILURE:/p' build.log | grep -E -A2 "error:" | sed 's#/home/runner/work/[^/]*/[^/]*/src/main/java/com/modulesmod/##' | head -600
-          echo
-          echo "=== API SIGNATURES ==="
-          CP=$(find ~/.gradle -name '*.jar' | grep -i minecraft | grep -v -e sources -e fabric-api -e fabric-loader | tr '\n' ':')
-          for j in $(echo "$CP" | tr ':' ' '); do unzip -Z1 "$j" 2>/dev/null | grep '^net/minecraft/.*\.class$' | sed "s#\$# $j#"; done > classes.txt
+          sed -n '1,/FAILURE:/p' build.log | grep -E -A2 "error:" | sed 's#/home/runner/work/[^/]*/[^/]*/src/main/java/com/modulesmod/##' > errors.txt
+          cat errors.txt
+          CP=$(find ~/.gradle -name '*.jar' | grep -i -E 'minecraft|blaze|mojang' | grep -v -e sources -e fabric-api -e fabric-loader | tr '\n' ':')
+          for j in $(echo "$CP" | tr ':' ' '); do unzip -Z1 "$j" 2>/dev/null | grep -E '^(net/minecraft|com/mojang)/.*\.class$' | sed "s#\$# $j#"; done > classes.txt
           fqn() { grep -E "/$1\.class " classes.txt | awk '{print $1}' | sed 's#/#.#g; s#\.class$##' | head -1; }
           show() { F=$(fqn $1); echo "=== $1 ($F)"; if [ -n "$F" ]; then javap -p -cp "$CP" "$F" | grep -v lambda | grep -E "${2:-.}"; fi; true; }
-          show EntityModel '.'
-          show PlayerFaceExtractor '.'
-          show TeamColor '.'
-          show Team 'olor'
-          show Minecraft 'arget'
-          show Options 'ide'
-          show InventoryScreen 'ntity'
-          show ChatComponent 'ddMessage|ddClient'
-          show LevelRenderer 'utline'
-          show GameRenderer 'rojection|etFov|ostEffect'
-          show FogRenderer 'og'
+          {
+            echo "=== BufferSource classes"; grep -E "BufferSource" classes.txt | awk '{print $1}' | head -5
+            show EntityModel 'setupAnim|root|Model\('
+            show Model 'setupAnim|root|Model\(|resetPose'
+            show PlayerFaceExtractor '.'
+            show Hud 'idden|hide|Hide|isHud'
+            show Options 'ud|Gui|gui'
+            show Minecraft 'RenderTarget|Framebuffer|MainTarget|mainTarget|getWindow'
+            show Window 'ramebuffer|Target'
+            show GameRenderer 'Target|Framebuffer|rojection|Fov|fov'
+            show RenderTarget 'resize|idth|eight'
+            show Projection '.'
+            show FogData '.'
+            show FogRenderer 'Fog|fog'
+            show DebugRenderer '.'
+            show LevelRenderer 'ebug|izmo|Hitbox|hitbox'
+            show EntityRenderDispatcher 'itbox|ebug'
+            show ItemModelResolver 'update|clear'
+            show ItemModelManager 'update|clear'
+            show MouseHandler 'croll'
+            show PlayerTabOverlay 'ender|xtract'
+            show AvatarRenderer 'xtract|ender|Cape|cape'
+            show AvatarRenderState 'ape'
+            show Level 'ain|hunder|ime|Gradient'
+            show ClientLevel 'ain|hunder|ime|Gradient'
+          } > api.txt 2>&1
+          wc -l api.txt
           exit $code
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: api-dump
+          path: |
+            api.txt
+            errors.txt
+            build.log
 
       - uses: actions/upload-artifact@v4
         if: always()

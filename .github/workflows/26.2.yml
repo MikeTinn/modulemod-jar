@@ -1,0 +1,43 @@
+name: Migrate to 26.2 (run once)
+on: workflow_dispatch
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: 9.2.0
+      # Still the old 1.21.11 + Yarn setup here: Loom renames every Minecraft class/method/field
+      # (and the mixin targets) from Yarn names to Mojang names.
+      - name: Rename Yarn -> Mojang names
+        run: gradle migrateMappings --mappings "net.minecraft:mappings:1.21.11"
+      - name: Swap in the migrated sources and the 26.2 build files
+        run: |
+          test -d remappedSrc
+          P=$(find remappedSrc -maxdepth 4 -type d -name com | head -1)
+          test -n "$P"
+          rm -rf src/main/java
+          mkdir -p src/main/java
+          cp -r "$(dirname "$P")"/. src/main/java/
+          cp port-26.2/gradle.properties gradle.properties
+          cp port-26.2/build.gradle build.gradle
+          cp port-26.2/fabric.mod.json src/main/resources/fabric.mod.json
+          cp port-26.2/modulesmod.mixins.json src/main/resources/modulesmod.mixins.json
+          cp port-26.2/modulesmod.optional.mixins.json src/main/resources/modulesmod.optional.mixins.json
+          rm -rf remappedSrc port-26.2 .github/workflows/migrate-to-26.2.yml
+      - name: Commit
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add -A
+          git commit -m "Port to Minecraft 26.2 (Mojang names, new build files)"
+          git push

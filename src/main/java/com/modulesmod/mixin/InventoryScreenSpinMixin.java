@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
  */
 @Mixin(InventoryScreen.class)
 public abstract class InventoryScreenSpinMixin {
-	@ModifyVariable(method = "renderEntityInInventoryFollowsMouse(Lnet/minecraft/client/gui/GuiGraphicsExtractor;IIIIIFFFLnet/minecraft/world/entity/LivingEntity;)V",
+	@ModifyVariable(method = "extractEntityInInventoryFollowsMouse(Lnet/minecraft/client/gui/GuiGraphicsExtractor;IIIIIFFFLnet/minecraft/world/entity/LivingEntity;)V",
 			at = @At("STORE"), ordinal = 0, require = 0)
 	private static Quaternionf modulesmod$spin(Quaternionf rotation) {
 		return PreviewSpin.active ? rotation.rotateY(PreviewSpin.radians) : rotation;

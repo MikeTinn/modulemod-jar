@@ -101,7 +101,7 @@ public class CosmeticsScreen extends Screen {
 		} catch (Throwable t) {
 			status = "Folder: " + CustomImages.capesFolder();
 			Minecraft mc = Minecraft.getInstance();
-			if (mc.player != null) mc.gui.hud.getChat().addMessage(Component.literal("[Cosmetics] put pictures in " + CustomImages.capesFolder()));
+			if (mc.player != null) mc.gui.hud.getChat().addMessage(Component.literal("[Cosmetics] put pictures in " + CustomImages.capesFolder()), (net.minecraft.network.chat.MessageSignature) null, (net.minecraft.client.multiplayer.chat.GuiMessageTag) null);
 		}
 	}
 
@@ -382,7 +382,7 @@ public class CosmeticsScreen extends Screen {
 		PreviewSpin.active = true;
 		try {
 			// the mouse position is fixed in the middle so the player looks straight ahead; turning is done by the angle
-			InventoryScreen.renderEntityInInventoryFollowsMouse(ctx, px + 2, py + 2, px + pw - 2, py + mh - 2, size, 0.0625f,
+			InventoryScreen.extractEntityInInventoryFollowsMouse(ctx, px + 2, py + 2, px + pw - 2, py + mh - 2, size, 0.0625f,
 					cx, py + mh * 0.35f, mc.player);
 		} finally {
 			PreviewSpin.active = false;

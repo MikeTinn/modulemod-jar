@@ -48,7 +48,7 @@ public class ColorPickerScreen extends Screen {
 
 		hexField = new EditBox(font, svX, svY + SV + 8, 72, 20, Component.literal("Hex"));
 		hexField.setMaxLength(6);
-		hexField.setFilter(t -> t.matches("[0-9a-fA-F]{0,6}"));
+		hexField.setMaxLength(6);
 		hexField.setValue(setting.str.toUpperCase(Locale.ROOT));
 		hexField.setResponder(t -> {
 			if (!updatingField && t.length() == 6) {

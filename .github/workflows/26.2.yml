@@ -21,8 +21,12 @@ jobs:
       - name: Unzip the project
         run: |
           test -f modulesmod-26.2.zip
-          unzip -o modulesmod-26.2.zip -x ".github/*"
+          unzip -q -o modulesmod-26.2.zip -d _port
           rm modulesmod-26.2.zip
+          D=$(dirname "$(find _port -name settings.gradle | head -1)")
+          test -d "$D"
+          rsync -a --exclude '.github' "$D"/ ./
+          rm -rf _port
           test -f settings.gradle
 
       - name: Rename Yarn -> Mojang names

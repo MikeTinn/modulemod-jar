@@ -1,0 +1,68 @@
+{
+ "model": {
+  "type": "minecraft:select",
+  "property": "minecraft:custom_model_data",
+  "fallback": {
+   "type": "minecraft:model",
+   "model": "minecraft:item/copper_pickaxe"
+  },
+  "cases": [
+   {
+    "when": "flame",
+    "model": {
+     "type": "minecraft:model",
+     "model": "modulesmod:item/skin_flame_pickaxe"
+    }
+   },
+   {
+    "when": "frost",
+    "model": {
+     "type": "minecraft:model",
+     "model": "modulesmod:item/skin_frost_pickaxe"
+    }
+   },
+   {
+    "when": "emerald",
+    "model": {
+     "type": "minecraft:model",
+     "model": "modulesmod:item/skin_emerald_pickaxe"
+    }
+   },
+   {
+    "when": "amethyst",
+    "model": {
+     "type": "minecraft:model",
+     "model": "modulesmod:item/skin_amethyst_pickaxe"
+    }
+   },
+   {
+    "when": "shadow",
+    "model": {
+     "type": "minecraft:model",
+     "model": "modulesmod:item/skin_shadow_pickaxe"
+    }
+   },
+   {
+    "when": "candy",
+    "model": {
+     "type": "minecraft:model",
+     "model": "modulesmod:item/skin_candy_pickaxe"
+    }
+   },
+   {
+    "when": "sunstone",
+    "model": {
+     "type": "minecraft:model",
+     "model": "modulesmod:item/skin_sunstone_pickaxe"
+    }
+   },
+   {
+    "when": "ocean",
+    "model": {
+     "type": "minecraft:model",
+     "model": "modulesmod:item/skin_ocean_pickaxe"
+    }
+   }
+  ]
+ }
+}

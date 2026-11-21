@@ -1,0 +1,18 @@
+{
+  "required": false,
+  "package": "com.modulesmod.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "client": [
+    "ChatHudStackMixin",
+    "GameRendererAccess",
+    "GameRendererZoomMixin",
+    "MouseZoomMixin",
+    "UpscalerResizeMixin",
+    "ItemModelManagerMixin",
+    "PlayerCapeHideMixin",
+    "InventoryScreenSpinMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 0
+  }
+}

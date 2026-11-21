@@ -1,0 +1,44 @@
+{
+ "skins": [
+  {
+   "id": "flame",
+   "name": "Flame",
+   "accent": "#ff7a2f"
+  },
+  {
+   "id": "frost",
+   "name": "Frost",
+   "accent": "#7fe3ff"
+  },
+  {
+   "id": "emerald",
+   "name": "Emerald",
+   "accent": "#37d67a"
+  },
+  {
+   "id": "amethyst",
+   "name": "Amethyst",
+   "accent": "#b06cff"
+  },
+  {
+   "id": "shadow",
+   "name": "Shadow",
+   "accent": "#7b5cff"
+  },
+  {
+   "id": "candy",
+   "name": "Candy",
+   "accent": "#ff8fc7"
+  },
+  {
+   "id": "sunstone",
+   "name": "Sunstone",
+   "accent": "#ffd24a"
+  },
+  {
+   "id": "ocean",
+   "name": "Ocean",
+   "accent": "#3ec6c1"
+  }
+ ]
+}

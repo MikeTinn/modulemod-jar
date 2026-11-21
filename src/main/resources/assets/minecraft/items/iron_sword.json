@@ -1,0 +1,68 @@
+{
+ "model": {
+  "type": "minecraft:select",
+  "property": "minecraft:custom_model_data",
+  "fallback": {
+   "type": "minecraft:model",
+   "model": "minecraft:item/iron_sword"
+  },
+  "cases": [
+   {
+    "when": "flame",
+    "model": {
+     "type": "minecraft:model",
+     "model": "modulesmod:item/skin_flame_sword"
+    }
+   },
+   {
+    "when": "frost",
+    "model": {
+     "type": "minecraft:model",
+     "model": "modulesmod:item/skin_frost_sword"
+    }
+   },
+   {
+    "when": "emerald",
+    "model": {
+     "type": "minecraft:model",
+     "model": "modulesmod:item/skin_emerald_sword"
+    }
+   },
+   {
+    "when": "amethyst",
+    "model": {
+     "type": "minecraft:model",
+     "model": "modulesmod:item/skin_amethyst_sword"
+    }
+   },
+   {
+    "when": "shadow",
+    "model": {
+     "type": "minecraft:model",
+     "model": "modulesmod:item/skin_shadow_sword"
+    }
+   },
+   {
+    "when": "candy",
+    "model": {
+     "type": "minecraft:model",
+     "model": "modulesmod:item/skin_candy_sword"
+    }
+   },
+   {
+    "when": "sunstone",
+    "model": {
+     "type": "minecraft:model",
+     "model": "modulesmod:item/skin_sunstone_sword"
+    }
+   },
+   {
+    "when": "ocean",
+    "model": {
+     "type": "minecraft:model",
+     "model": "modulesmod:item/skin_ocean_sword"
+    }
+   }
+  ]
+ }
+}

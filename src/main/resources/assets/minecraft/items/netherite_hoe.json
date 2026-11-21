@@ -1,0 +1,68 @@
+{
+ "model": {
+  "type": "minecraft:select",
+  "property": "minecraft:custom_model_data",
+  "fallback": {
+   "type": "minecraft:model",
+   "model": "minecraft:item/netherite_hoe"
+  },
+  "cases": [
+   {
+    "when": "flame",
+    "model": {
+     "type": "minecraft:model",
+     "model": "modulesmod:item/skin_flame_hoe"
+    }
+   },
+   {
+    "when": "frost",
+    "model": {
+     "type": "minecraft:model",
+     "model": "modulesmod:item/skin_frost_hoe"
+    }
+   },
+   {
+    "when": "emerald",
+    "model": {
+     "type": "minecraft:model",
+     "model": "modulesmod:item/skin_emerald_hoe"
+    }
+   },
+   {
+    "when": "amethyst",
+    "model": {
+     "type": "minecraft:model",
+     "model": "modulesmod:item/skin_amethyst_hoe"
+    }
+   },
+   {
+    "when": "shadow",
+    "model": {
+     "type": "minecraft:model",
+     "model": "modulesmod:item/skin_shadow_hoe"
+    }
+   },
+   {
+    "when": "candy",
+    "model": {
+     "type": "minecraft:model",
+     "model": "modulesmod:item/skin_candy_hoe"
+    }
+   },
+   {
+    "when": "sunstone",
+    "model": {
+     "type": "minecraft:model",
+     "model": "modulesmod:item/skin_sunstone_hoe"
+    }
+   },
+   {
+    "when": "ocean",
+    "model": {
+     "type": "minecraft:model",
+     "model": "modulesmod:item/skin_ocean_hoe"
+    }
+   }
+  ]
+ }
+}

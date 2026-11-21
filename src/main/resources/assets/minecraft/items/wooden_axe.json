@@ -1,0 +1,68 @@
+{
+ "model": {
+  "type": "minecraft:select",
+  "property": "minecraft:custom_model_data",
+  "fallback": {
+   "type": "minecraft:model",
+   "model": "minecraft:item/wooden_axe"
+  },
+  "cases": [
+   {
+    "when": "flame",
+    "model": {
+     "type": "minecraft:model",
+     "model": "modulesmod:item/skin_flame_axe"
+    }
+   },
+   {
+    "when": "frost",
+    "model": {
+     "type": "minecraft:model",
+     "model": "modulesmod:item/skin_frost_axe"
+    }
+   },
+   {
+    "when": "emerald",
+    "model": {
+     "type": "minecraft:model",
+     "model": "modulesmod:item/skin_emerald_axe"
+    }
+   },
+   {
+    "when": "amethyst",
+    "model": {
+     "type": "minecraft:model",
+     "model": "modulesmod:item/skin_amethyst_axe"
+    }
+   },
+   {
+    "when": "shadow",
+    "model": {
+     "type": "minecraft:model",
+     "model": "modulesmod:item/skin_shadow_axe"
+    }
+   },
+   {
+    "when": "candy",
+    "model": {
+     "type": "minecraft:model",
+     "model": "modulesmod:item/skin_candy_axe"
+    }
+   },
+   {
+    "when": "sunstone",
+    "model": {
+     "type": "minecraft:model",
+     "model": "modulesmod:item/skin_sunstone_axe"
+    }
+   },
+   {
+    "when": "ocean",
+    "model": {
+     "type": "minecraft:model",
+     "model": "modulesmod:item/skin_ocean_axe"
+    }
+   }
+  ]
+ }
+}

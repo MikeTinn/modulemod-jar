@@ -1,0 +1,68 @@
+{
+ "model": {
+  "type": "minecraft:select",
+  "property": "minecraft:custom_model_data",
+  "fallback": {
+   "type": "minecraft:model",
+   "model": "minecraft:item/iron_shovel"
+  },
+  "cases": [
+   {
+    "when": "flame",
+    "model": {
+     "type": "minecraft:model",
+     "model": "modulesmod:item/skin_flame_shovel"
+    }
+   },
+   {
+    "when": "frost",
+    "model": {
+     "type": "minecraft:model",
+     "model": "modulesmod:item/skin_frost_shovel"
+    }
+   },
+   {
+    "when": "emerald",
+    "model": {
+     "type": "minecraft:model",
+     "model": "modulesmod:item/skin_emerald_shovel"
+    }
+   },
+   {
+    "when": "amethyst",
+    "model": {
+     "type": "minecraft:model",
+     "model": "modulesmod:item/skin_amethyst_shovel"
+    }
+   },
+   {
+    "when": "shadow",
+    "model": {
+     "type": "minecraft:model",
+     "model": "modulesmod:item/skin_shadow_shovel"
+    }
+   },
+   {
+    "when": "candy",
+    "model": {
+     "type": "minecraft:model",
+     "model": "modulesmod:item/skin_candy_shovel"
+    }
+   },
+   {
+    "when": "sunstone",
+    "model": {
+     "type": "minecraft:model",
+     "model": "modulesmod:item/skin_sunstone_shovel"
+    }
+   },
+   {
+    "when": "ocean",
+    "model": {
+     "type": "minecraft:model",
+     "model": "modulesmod:item/skin_ocean_shovel"
+    }
+   }
+  ]
+ }
+}

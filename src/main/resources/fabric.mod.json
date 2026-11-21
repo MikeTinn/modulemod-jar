@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "modulesmod",
+  "version": "${version}",
+  "name": "Modules Mod",
+  "description": "Scoreboard, Tab, Aspect Ratio, Chat and Hitbox modules with Lunar-style settings screens. Open the settings from Mod Menu.",
+  "authors": ["You"],
+  "environment": "client",
+  "icon": "assets/modulesmod/icon.png",
+  "mixins": ["modulesmod.mixins.json", "modulesmod.optional.mixins.json"],
+  "entrypoints": {
+    "client": ["com.modulesmod.ModulesMod"],
+    "modmenu": ["com.modulesmod.ModMenuIntegration"]
+  },
+  "depends": {
+    "fabricloader": ">=0.19.3",
+    "minecraft": "~26.2",
+    "java": ">=25",
+    "fabric-api": "*"
+  }
+}

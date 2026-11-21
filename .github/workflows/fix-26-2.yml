@@ -1,4 +1,4 @@
-name: Fix 26.2 API changes
+name: Fix 26.2 part 2
 on: workflow_dispatch
 
 permissions:
@@ -21,50 +21,25 @@ jobs:
         run: |
           python3 - <<'PY'
           import re, pathlib
-
-          def msg(m):
-              expr, flag = m.group(2), m.group(3)
-              who = m.group(1)
-              if flag == "true":
-                  return f"{who}.gui.hud.setOverlayMessage({expr}, false)"
-              return f"{who}.gui.getChat().addMessage({expr})"
-
           for f in pathlib.Path("src/main/java").rglob("*.java"):
               t = f.read_text(encoding="utf-8")
               o = t
-              # GuiGraphics -> GuiGraphicsExtractor, Screen.render -> extractRenderState
-              t = re.sub(r'\bGuiGraphics\b', 'GuiGraphicsExtractor', t)
-              t, n = re.subn(r'public void render\(GuiGraphicsExtractor (\w+), int (\w+), int (\w+), float (\w+)\)',
-                             r'public void extractRenderState(GuiGraphicsExtractor \1, int \2, int \3, float \4)', t)
-              if n:
-                  t = t.replace('super.render(', 'super.extractRenderState(')
-              # screen handling moved to Gui
-              t = re.sub(r'\b(minecraft|mc|client)\.setScreen\(', r'\1.gui.setScreen(', t)
-              t = re.sub(r'getInstance\(\)\.setScreen\(', 'getInstance().gui.setScreen(', t)
-              t = re.sub(r'\b(minecraft|mc|client)\.screen\b(?!\s*\()', r'\1.gui.screen()', t)
-              # Fabric API renames
-              t = t.replace('net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper',
-                            'net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper')
-              t = t.replace('KeyBindingHelper.registerKeyBinding', 'KeyMappingHelper.registerKeyMapping')
-              t = re.sub(r'\bKeyBindingHelper\b', 'KeyMappingHelper', t)
-              t = re.sub(r'\bClientCommandManager\b', 'ClientCommands', t)
-              t = re.sub(r'\bLivingEntityFeatureRendererRegistrationCallback\b',
-                         'LivingEntityRenderLayerRegistrationCallback', t)
-              # vanilla HUD element
-              t = t.replace('vanilla.render(', 'vanilla.extractRenderState(')
-              # player.displayClientMessage was removed
-              t = re.sub(r'\b(\w+)\.player\.displayClientMessage\((.*),\s*(true|false)\)', msg, t)
+              # GuiGraphicsExtractor draw methods
+              t = re.sub(r'\b(ctx|c|g|graphics)\.drawString\(', r'\1.text(', t)
+              t = re.sub(r'\b(ctx|c|g|graphics)\.renderItemDecorations\(', r'\1.itemDecorations(', t)
+              t = re.sub(r'\b(ctx|c|g|graphics)\.renderItem\(', r'\1.item(', t)
+              # chat and tab list moved from Gui to Hud
+              t = t.replace('.gui.getChat()', '.gui.hud.getChat()')
+              t = t.replace('.gui.getTabList()', '.gui.hud.getTabList()')
+              # player layer: render -> submit
+              if f.name == "CosmeticsFeature.java":
+                  t = t.replace('public void render(PoseStack', 'public void submit(PoseStack')
+              # chat head object now takes a fallback component
+              t = re.sub(r'(new ObjectContents\(\s*new PlayerSprite\(.*?Modules\.CH_HEAD_HAT\.bool\))\)',
+                         r'\1, java.util.Optional.empty())', t, flags=re.S)
               if t != o:
                   f.write_text(t, encoding="utf-8")
                   print("changed", f)
-
-          # show every compile error, not just the first 100
-          b = pathlib.Path("build.gradle")
-          s = b.read_text()
-          if "Xmaxerrs" not in s:
-              s = s.replace("it.options.release = 25",
-                            'it.options.release = 25\n\tit.options.compilerArgs.addAll(["-Xmaxerrs", "1000"])')
-              b.write_text(s)
           PY
 
       - name: Commit
@@ -72,9 +47,11 @@ jobs:
           git config user.name "github-actions"
           git config user.email "github-actions@users.noreply.github.com"
           git add -A
-          git diff --cached --quiet || (git commit -m "26.2 API renames" && git push)
+          git diff --cached --quiet || (git commit -m "26.2 API renames part 2" && git push)
 
       - name: Build
+        id: build
+        continue-on-error: true
         run: |
           set +e
           gradle build --console=plain > build.log 2>&1
@@ -83,8 +60,38 @@ jobs:
           sed -n '1,/FAILURE:/p' build.log | grep -E -A2 "error:" | sed 's#/home/runner/work/[^/]*/[^/]*/src/main/java/com/modulesmod/##' | head -600
           exit $code
 
+      - name: Dump 26.2 API signatures
+        if: always()
+        run: |
+          CP=$(find ~/.gradle -name '*.jar' | grep -i minecraft | grep -v -e sources -e fabric-api -e fabric-loader | tr '\n' ':')
+          for j in $(echo "$CP" | tr ':' ' '); do unzip -Z1 "$j" 2>/dev/null | grep '^net/minecraft/.*\.class$' | sed "s#\$# $j#"; done > classes.txt
+          fqn() { grep -E "/$1\.class " classes.txt | awk '{print $1}' | sed 's#/#.#g; s#\.class$##' | head -3; }
+          echo "=== WHERE CLASSES LIVE ==="
+          for n in GuiMessage GuiMessageTag MultiBufferSource LevelRenderState PlayerFaceExtractor PlayerFaceRenderer ChatComponent PlayerTabOverlay TeamColor RenderTarget; do echo "$n: $(fqn $n | tr '\n' ' ')"; done
+          show() { F=$(fqn $1 | head -1); echo "=== $1 ($F)"; if [ -n "$F" ]; then javap -p -cp "$CP" "$F" | grep -E "${2:-.}"; fi; }
+          show GuiGraphicsExtractor ' text\(| item\(| itemDecorations\(| fill\(|outline|blit\('
+          show EditBox 'ilter|Predicate|ormatter'
+          show Gui 'hat|ab|hud|creen'
+          show Hud 'hat|ab|verlay'
+          show EntityModel 'etup|nim|root'
+          show RenderLayer 'submit|render'
+          show ObjectContents '.'
+          show Team 'olor'
+          show TeamColor '.'
+          show PlayerFaceExtractor '.'
+          show Minecraft 'RenderTarget|renderTarget'
+          show Options 'ide'
+          show LocalPlayer 'essage|verlay'
+          show HudElement '.'
+          show ChatComponent 'essage|ender|xtract'
+          show LevelRenderer 'utline'
+
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: modulesmod-jar
           path: build/libs/modulesmod-*.jar
+
+      - name: Fail if the build failed
+        if: steps.build.outcome == 'failure'
+        run: exit 1

@@ -150,7 +150,7 @@ public class ModuleSettingsScreen extends Screen {
 	private EditBox textField(Setting s, int x) {
 		EditBox f = new EditBox(font, x, 0, 145, 20, Component.literal(s.label));
 		if (s.type == Setting.Type.INT) {
-			f.setFilter(t -> t.matches("-?\\d{0,9}"));
+			f.setMaxLength(11);
 		} else {
 			f.setMaxLength(60);
 		}

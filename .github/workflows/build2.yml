@@ -19,9 +19,15 @@ jobs:
       - name: Unzip project
         run: unzip -q MaceMain.zip -d project
 
-      # The addon only compiles against the built client jar (nothing from the client is rebuilt).
+      # The addon compiles against your already-built client jar. Put it in the repo root as autism-client.jar.
       - name: Add client jar
-        run: cp autism-client.jar project/MaceMain/libs/
+        run: |
+          mkdir -p project/MaceMain/libs
+          if [ -f autism-client.jar ]; then cp autism-client.jar project/MaceMain/libs/; fi
+          if ! ls project/MaceMain/libs/*.jar >/dev/null 2>&1; then
+            echo "::error::No client jar found. Add your built AUTISM Client jar to the repo root as autism-client.jar."
+            exit 1
+          fi
 
       - name: Make Gradle wrapper executable
         run: chmod +x ./gradlew

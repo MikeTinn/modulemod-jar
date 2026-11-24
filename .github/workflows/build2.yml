@@ -1,4 +1,4 @@
-name: build-addon
+name: build
 
 on:
   push:
@@ -16,24 +16,26 @@ jobs:
           distribution: temurin
           java-version: '25'
 
-      - name: Unzip client and addon
-        run: |
-          unzip -q MaceMain.zip -d addon
+      - name: Unzip project
+        run: unzip -q MaceMain.zip -d project
 
-      - name: Make Gradle wrappers executable
-        run: |
-          chmod +x addon/MaceMain/gradlew
+      # The addon only compiles against the built client jar (nothing from the client is rebuilt).
+      - name: Add client jar
+        run: cp autism-client.jar project/MaceMain/libs/
 
-      # The addon compiles against the client API, so publish that to the runner's local Maven repo first.
+      - name: Make Gradle wrapper executable
+        run: chmod +x ./gradlew
+        working-directory: project/MaceMain
+
       - name: Build MaceMain addon
         run: ./gradlew build --no-daemon -x test
-        working-directory: addon/MaceMain
+        working-directory: project/MaceMain
 
-      - name: Upload addon jar
+      - name: Upload mod jar
         uses: actions/upload-artifact@v4
         with:
           name: MaceMain
           path: |
-            addon/MaceMain/build/libs/*.jar
-            !addon/MaceMain/build/libs/*-sources.jar
+            project/MaceMain/build/libs/*.jar
+            !project/MaceMain/build/libs/*-sources.jar
           if-no-files-found: error

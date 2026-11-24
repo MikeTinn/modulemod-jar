@@ -20,13 +20,31 @@ jobs:
         run: unzip -q MaceMain.zip -d project
 
       # The addon compiles against your already-built client jar. Put it in the repo root as autism-client.jar.
-      - name: Add client jar
+      - name: Add and check client jar
         run: |
           mkdir -p project/MaceMain/libs
-          if [ -f autism-client.jar ]; then cp autism-client.jar project/MaceMain/libs/; fi
-          if ! ls project/MaceMain/libs/*.jar >/dev/null 2>&1; then
-            echo "::error::No client jar found. Add your built AUTISM Client jar to the repo root as autism-client.jar."
+          if [ ! -f autism-client.jar ]; then
+            echo "::error::autism-client.jar is missing from the repo root."
             exit 1
+          fi
+          echo "File info:"; ls -l autism-client.jar; file autism-client.jar || true
+          if ! unzip -tq autism-client.jar >/dev/null 2>&1; then
+            echo "::error::autism-client.jar is not a valid jar/zip (size above). It is probably empty, cut off, or not the real file. Re-download the client jar and upload it again."
+            exit 1
+          fi
+          # If it is really the Actions download (a zip that has the jar inside), pull the jar out of it.
+          if ! unzip -l autism-client.jar | grep -q "fabric.mod.json"; then
+            mkdir -p inner
+            unzip -q autism-client.jar -d inner
+            INNER=$(find inner -name "*.jar" ! -name "*-sources.jar" | head -1)
+            if [ -z "$INNER" ]; then
+              echo "::error::No client jar found inside autism-client.jar."
+              exit 1
+            fi
+            echo "Using inner jar: $INNER"
+            cp "$INNER" project/MaceMain/libs/autism-client.jar
+          else
+            cp autism-client.jar project/MaceMain/libs/autism-client.jar
           fi
 
       - name: Make Gradle wrapper executable

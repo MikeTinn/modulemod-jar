@@ -18,19 +18,13 @@ jobs:
 
       - name: Unzip client and addon
         run: |
-          unzip -q Autism-Client-main.zip -d client
           unzip -q MaceMain.zip -d addon
 
       - name: Make Gradle wrappers executable
         run: |
-          chmod +x client/Autism-Client-main/gradlew
           chmod +x addon/MaceMain/gradlew
 
       # The addon compiles against the client API, so publish that to the runner's local Maven repo first.
-      - name: Publish AUTISM Client API
-        run: ./gradlew publishToMavenLocal --no-daemon -x test
-        working-directory: client/Autism-Client-main
-
       - name: Build MaceMain addon
         run: ./gradlew build --no-daemon -x test
         working-directory: addon/MaceMain
